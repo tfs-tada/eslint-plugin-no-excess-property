@@ -1,6 +1,6 @@
 # eslint-no-excess-property
 
-[![npm version](https://badge.fury.io/js/eslint-no-excess-property.svg)](https://badge.fury.io/js/eslint-no-excess-property)
+[![npm version](https://badge.fury.io/js/eslint-plugin-no-excess-property.svg)](https://badge.fury.io/js/eslint-plugin-no-excess-property)
 
 This project provides an ESLint rule to prohibit excess properties in object assignments.
 
