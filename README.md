@@ -17,7 +17,7 @@ Add the following to your ESLint configuration file (such as .eslintrc):
 ```json
 {
   "plugins": ["no-excess-property"],
-  "rules": { 
+  "rules": {
     "no-excess-property/no-excess-property": "error",
     "no-excess-property/no-excess-property-func": "error",
   },
@@ -35,7 +35,51 @@ Add the following to your ESLint configuration file (such as .eslintrc):
 
 `no-excess-propertiy` & `no-excess-property-func`
 
-Prohibits excess properties in object assignments. This will cause an error when trying to add an object with properties not present in the type to an array of that type.
+This rule prohibits excess properties in object assignments.
+
+## Example
+
+```typescript
+type User = { name: string };
+const taro = { name: 'Taro' };
+const user1: User = taro; // OK
+
+const jiro = { name: 'Jiro', age: 20 };
+const user2: User = jiro; // Error
+
+const users: User[] = [taro, jiro]; // Error
+const dummyUsers: User[] = [...Array(10)].map((_, idx) => ({ name: `${idx}` })); // OK
+const dummyUsers2: User[] = [...Array(10)].map((_, idx) => ({
+  name: `${idx}`,
+  age: idx,
+})); // Error
+
+const func = (user: User) => {};
+func(taro); // OK
+func(jiro); // Error
+
+type Func = (user: User) => User;
+const func2: Func = (user) => {
+  const target = {
+    name: user.name,
+    age: 30,
+  };
+  return target; // Error
+};
+const func3: Func = (user) => {
+  const okTarget = {
+    name: user.name,
+  };
+  const errorTarget = {
+    name: user.name,
+    age: 30,
+  };
+  if (Math.random() > 0.5) {
+    return errorTarget; // Error
+  }
+  return okTarget; // OK
+};
+```
 
 ## License
 

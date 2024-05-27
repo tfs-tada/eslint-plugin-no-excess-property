@@ -85,6 +85,26 @@ ruleTester.run("no-excess-property-func", rule, {
     },
     {
       code: `
+      type User = { name: string };
+      const jiro = { name: "jiro", age: 10 };
+      const func = (): User | string => {
+        return jiro;
+      };
+      `,
+      errors,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const jiro = { name: "jiro", age: 10 };
+      const func = (): User | void => {
+        return jiro;
+      };
+      `,
+      errors,
+    },
+    {
+      code: `
       type User = { name: string, hoge?: string };
       const jiro = { name: "jiro", age: 10 };
       const func = (): User => {

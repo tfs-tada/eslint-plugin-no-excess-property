@@ -78,6 +78,14 @@ ruleTester.run("no-excess-property", rule, {
     {
       code: `
       type User = { name: string };
+      const jiro = { name: "jiro", age: 10 };
+      const sampleUser: User | string = jiro;
+      `,
+      errors,
+    },
+    {
+      code: `
+      type User = { name: string };
       type UserList = { users: User[], mainUser: User | null };
       const jiro = { name: "jiro", age: 10 };
       const sampleUserList: UserList = { users: [jiro], mainUser: null };

@@ -14,9 +14,18 @@ export class TypeUtil {
     idType: ts.Type,
     skipClass: boolean
   ): false | "skip" | { property: string; objectName: string } => {
+    // Check if idType is a Union
+    if (idType.isUnion()) {
+      const result = idType.types.map((type) =>
+        this.checkProperties(initType, type, skipClass)
+      );
+      const returnObjectFlag = result.find((res) => typeof res === "object");
+      const returnFalseFlag = result.find((res) => res === false);
+      return returnFalseFlag ?? returnObjectFlag ?? false;
+    }
+
     if (
       [
-        ts.TypeFlags.Void,
         ts.TypeFlags.Any,
         ts.TypeFlags.Unknown,
         ts.TypeFlags.Never,
@@ -35,13 +44,15 @@ export class TypeUtil {
     }
     if (
       [
+        ts.TypeFlags.Void,
         ts.TypeFlags.Enum,
         ts.TypeFlags.EnumLiteral,
         ts.TypeFlags.Void,
         ts.TypeFlags.Null,
         ts.TypeFlags.Undefined,
         ts.TypeFlags.VoidLike,
-      ].includes(idType.flags)
+      ].includes(idType.flags) || 
+      idType.flags <= 2048
     ) {
       return "skip";
     }
@@ -49,24 +60,6 @@ export class TypeUtil {
     // circular structure
     if (idType === initType) {
       return false;
-    }
-
-    // Skip if idType is a generic type
-    if (
-      "resolvedBaseConstraint" in idType ||
-      "immediateBaseConstraint" in idType
-    ) {
-      return false;
-    }
-
-    // Check if idType is a Union
-    if (idType.isUnion()) {
-      const result = idType.types.map((type) =>
-        this.checkProperties(initType, type, skipClass)
-      );
-      const returnObjectFlag = result.find((res) => typeof res === "object");
-      const returnFalseFlag = result.find((res) => res === false);
-      return returnFalseFlag ?? returnObjectFlag ?? false;
     }
 
     if (skipClass && initType.isClass()) {
