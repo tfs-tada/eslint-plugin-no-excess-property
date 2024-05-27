@@ -59,7 +59,7 @@ export = createRule({
           const returnStatements = node.body.body
             .map((e) => findReturnStatements(e as any))
             .flat();
-          returnStatements.forEach((returnStatement) => {
+          for (const returnStatement of returnStatements) {
             if (!returnStatement.argument) return;
             const returnStatementNode = checker.getTypeAtLocation(
               parserServices.esTreeNodeToTSNodeMap!.get(
@@ -77,7 +77,7 @@ export = createRule({
                 messageId: "no-excess-property-func",
               });
             }
-          });
+          }
         }
       },
       VariableDeclarator(node) {
@@ -86,7 +86,9 @@ export = createRule({
         const signature = type.getCallSignatures();
         const returnRawTypes =
           signature?.map((sig) => checker.getReturnTypeOfSignature(sig)) ?? [];
-        const returnTypes = returnRawTypes.map((e) => checker.getPromisedTypeOfPromise(e) ?? e);
+        const returnTypes = returnRawTypes.map(
+          (e) => checker.getPromisedTypeOfPromise(e) ?? e
+        );
 
         if (returnTypes.length > 0) {
           if (
@@ -97,14 +99,16 @@ export = createRule({
             const returnStatements = node.init.body.body
               .map((e) => findReturnStatements(e as any))
               .flat();
-            returnStatements.forEach((returnStatement) => {
+            for (const returnStatement of returnStatements) {
               if (!returnStatement.argument) return;
               const returnStatementRawNode = checker.getTypeAtLocation(
                 parserServices.esTreeNodeToTSNodeMap!.get(
                   returnStatement.argument as any
                 )
               );
-              const returnStatementNode = checker.getPromisedTypeOfPromise(returnStatementRawNode) ?? returnStatementRawNode;
+              const returnStatementNode =
+                checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
+                returnStatementRawNode;
 
               if (
                 returnTypes.every((type) =>
@@ -116,14 +120,16 @@ export = createRule({
                   messageId: "no-excess-property-func",
                 });
               }
-            });
+            }
             return;
           }
           if (node.init !== null && "body" in node.init) {
             const returnStatementRawNode = checker.getTypeAtLocation(
               parserServices.esTreeNodeToTSNodeMap!.get(node.init.body)
             );
-            const returnStatementNode = checker.getPromisedTypeOfPromise(returnStatementRawNode) ?? returnStatementRawNode; 
+            const returnStatementNode =
+              checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
+              returnStatementRawNode;
 
             if (
               returnTypes.every((type) =>
