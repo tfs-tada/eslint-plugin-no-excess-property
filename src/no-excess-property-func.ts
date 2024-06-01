@@ -52,8 +52,11 @@ export = createRule({
         const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
         const type = checker.getTypeAtLocation(tsNode);
         const signature = type.getCallSignatures();
-        const returnTypes =
+        const returnRawTypes =
           signature?.map((sig) => checker.getReturnTypeOfSignature(sig)) ?? [];
+        const returnTypes = returnRawTypes.map(
+          (e) => checker.getPromisedTypeOfPromise(e) ?? e
+        );
 
         if (returnTypes.length > 0) {
           const returnStatements = node.body.body
