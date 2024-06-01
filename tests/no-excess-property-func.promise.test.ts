@@ -113,6 +113,22 @@ ruleTester.run("no-excess-property-func", rule, {
       const func: Func = async() => Promise.resolve({ id: 1 })
     `,
     },
+    {
+      code: `
+      const func = (): Promise<{ id: number }> => {
+        const asyncFunc = async () => ({ id: 1 });
+        return asyncFunc();
+      };
+    `,
+    },
+    {
+      code: `
+      function func(): Promise<{ id: number }> {
+        const asyncFunc = async () => ({ id: 1 });
+        return asyncFunc();
+      }
+    `,
+    },
   ],
   invalid: [
     {

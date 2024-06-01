@@ -13,6 +13,82 @@ ruleTester.run("no-excess-property", rule, {
   valid: [
     {
       code: `
+      const func = () => {
+        return
+      };
+      `,
+    },
+    {
+      code: `
+      const func = () => {}
+      `,
+    },
+    {
+      code: `
+      function func() {
+        return 
+      };
+      `,
+    },
+    {
+      code: `
+      const func = () => {
+        return null
+      };
+      `,
+    },
+    {
+      code: `
+      const func = () => null
+      `,
+    },
+    {
+      code: `
+      function func() {
+        return null
+      };
+      `,
+    },
+    {
+      code: `
+      const func = () => {
+        return undefined
+      };
+      `,
+    },
+    {
+      code: `
+      const func = () => undefined
+      `,
+    },
+    {
+      code: `
+      function func() {
+        return undefined
+      };
+      `,
+    },
+    {
+      code: `
+      const func = (): any => {
+        return { name: "taro" }
+      };
+      `,
+    },
+    {
+      code: `
+      const func = (): any => ({ name: "taro" })
+      `,
+    },
+    {
+      code: `
+      function func(): any {
+        return { name: "taro" }
+      };
+      `,
+    },
+    {
+      code: `
       type Func = Function;
       const addUser: Function = (user) => {};
       const taro = { name: "taro" };

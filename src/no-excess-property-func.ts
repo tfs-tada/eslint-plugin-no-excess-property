@@ -1,6 +1,5 @@
-import { ESLintUtils } from "@typescript-eslint/utils";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
 import ts from "typescript";
-import { ReturnStatement, Statement } from "estree";
 import { TypeUtil } from "./util";
 
 const createRule = ESLintUtils.RuleCreator(
@@ -19,7 +18,9 @@ export = createRule({
     if (!checker || !parserServices) return {};
     const typeUtil = new TypeUtil(checker);
 
-    const findReturnStatements = (node: Statement): ReturnStatement[] => {
+    const findReturnStatements = (
+      node: TSESTree.Statement
+    ): TSESTree.ReturnStatement[] => {
       if (node.type === "ReturnStatement") {
         return [node];
       }
@@ -32,7 +33,10 @@ export = createRule({
         return [node.body]
           .flat(2)
           .flatMap((childNode) =>
-            childNode.type !== "ClassBody"
+            !!childNode &&
+            childNode?.type !== "ClassBody" &&
+            childNode?.type !== "TSInterfaceBody" &&
+            childNode?.type !== "TSModuleBlock"
               ? findReturnStatements(childNode)
               : []
           );
@@ -47,51 +51,59 @@ export = createRule({
       return [];
     };
 
+    const getReturnTypes = (
+      node: TSESTree.VariableDeclarator | TSESTree.FunctionDeclaration
+    ): ts.Type[] => {
+      const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
+      const type = checker.getTypeAtLocation(tsNode);
+      const signature = type.getCallSignatures();
+      const returnRawTypes =
+        signature?.map((sig) => checker.getReturnTypeOfSignature(sig)) ?? [];
+      const returnTypes = returnRawTypes.map(
+        (e) => checker.getPromisedTypeOfPromise(e) ?? e
+      );
+      return returnTypes;
+    };
+
+    const checkReturnStatement = (
+      returnStatements: TSESTree.ReturnStatement[],
+      returnTypes: ts.Type[]
+    ) => {
+      for (const returnStatement of returnStatements) {
+        if (!returnStatement.argument) return;
+        const returnStatementRawNode = checker.getTypeAtLocation(
+          parserServices.esTreeNodeToTSNodeMap!.get(returnStatement.argument)
+        );
+        const returnStatementNode =
+          checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
+          returnStatementRawNode;
+
+        if (
+          returnTypes.every((type) =>
+            typeUtil.checkProperties(returnStatementNode, type, true)
+          )
+        ) {
+          context.report({
+            node: returnStatement,
+            messageId: "no-excess-property-func",
+          });
+        }
+      }
+    };
+
     return {
       FunctionDeclaration(node) {
-        const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
-        const type = checker.getTypeAtLocation(tsNode);
-        const signature = type.getCallSignatures();
-        const returnRawTypes =
-          signature?.map((sig) => checker.getReturnTypeOfSignature(sig)) ?? [];
-        const returnTypes = returnRawTypes.map(
-          (e) => checker.getPromisedTypeOfPromise(e) ?? e
-        );
+        const returnTypes = getReturnTypes(node);
 
         if (returnTypes.length > 0) {
           const returnStatements = node.body.body
-            .map((e) => findReturnStatements(e as any))
+            .map((e) => findReturnStatements(e))
             .flat();
-          for (const returnStatement of returnStatements) {
-            if (!returnStatement.argument) return;
-            const returnStatementNode = checker.getTypeAtLocation(
-              parserServices.esTreeNodeToTSNodeMap!.get(
-                returnStatement.argument as any
-              )
-            );
-
-            if (
-              returnTypes.every((type) =>
-                typeUtil.checkProperties(returnStatementNode, type, true)
-              )
-            ) {
-              context.report({
-                node: returnStatement as any,
-                messageId: "no-excess-property-func",
-              });
-            }
-          }
+          checkReturnStatement(returnStatements, returnTypes);
         }
       },
       VariableDeclarator(node) {
-        const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
-        const type = checker.getTypeAtLocation(tsNode);
-        const signature = type.getCallSignatures();
-        const returnRawTypes =
-          signature?.map((sig) => checker.getReturnTypeOfSignature(sig)) ?? [];
-        const returnTypes = returnRawTypes.map(
-          (e) => checker.getPromisedTypeOfPromise(e) ?? e
-        );
+        const returnTypes = getReturnTypes(node);
 
         if (returnTypes.length > 0) {
           if (
@@ -100,30 +112,9 @@ export = createRule({
             node.init.body.type === "BlockStatement"
           ) {
             const returnStatements = node.init.body.body
-              .map((e) => findReturnStatements(e as any))
+              .map((e) => findReturnStatements(e))
               .flat();
-            for (const returnStatement of returnStatements) {
-              if (!returnStatement.argument) return;
-              const returnStatementRawNode = checker.getTypeAtLocation(
-                parserServices.esTreeNodeToTSNodeMap!.get(
-                  returnStatement.argument as any
-                )
-              );
-              const returnStatementNode =
-                checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
-                returnStatementRawNode;
-
-              if (
-                returnTypes.every((type) =>
-                  typeUtil.checkProperties(returnStatementNode, type, true)
-                )
-              ) {
-                context.report({
-                  node: returnStatement as any,
-                  messageId: "no-excess-property-func",
-                });
-              }
-            }
+            checkReturnStatement(returnStatements, returnTypes);
             return;
           }
           if (node.init !== null && "body" in node.init) {
