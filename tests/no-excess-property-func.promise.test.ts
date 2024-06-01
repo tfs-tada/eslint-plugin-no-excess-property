@@ -19,6 +19,56 @@ ruleTester.run("no-excess-property-func", rule, {
   valid: [
     {
       code: `
+      const func = async () => {
+        return 
+      }
+      `,
+    },
+    {
+      code: `
+      async function func() {
+        return 
+      }
+      `,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const taro = { name: "taro" };
+      const func = async (): Promise<User> => {
+        return taro
+      }
+      `,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const taro = { name: "taro" };
+      async function func(): Promise<User> {
+        return taro
+      }
+      `,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const taro = { name: "taro" };
+      const func = async (): Promise<{[name: string]: User}> => {
+        return { taro }
+      }
+      `,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const taro = { name: "taro" };
+      const func = async (): Promise<{[name: string]: User}> => {
+        return {taro}
+      }
+      `,
+    },
+    {
+      code: `
       type Func = () => {id: number}
       const func: Func = () => {
         return { id: 1 }
@@ -65,6 +115,46 @@ ruleTester.run("no-excess-property-func", rule, {
     },
   ],
   invalid: [
+    {
+      code: `
+      type User = { name: string };
+      const func = async (): Promise<User> => {
+        const jiro = { name: "jiro", age: 10 };
+        return jiro
+      }
+      `,
+      errors,
+    },
+    {
+      code: `
+      type User = { name: string };
+      async function func(): Promise<User> {
+        const jiro = { name: "jiro", age: 10 };
+        return jiro
+      }
+      `,
+      errors,
+    },
+    {
+      code: `
+      type User = { name: string };
+      const jiro = { name: "jiro", age: 10 };
+      const func = async (): Promise<{[name: string]: User}> => {
+        return { jiro }
+      }
+      `,
+      errors
+    },
+    {
+      code: `
+      type User = { name: string };
+      const jiro = { name: "jiro", age: 10 };
+      const func = async (): Promise<{[name: string]: User}> => {
+        return { jiro }
+      }
+      `,
+      errors
+    },
     {
       code: `
       type Func = () => {id: number}
