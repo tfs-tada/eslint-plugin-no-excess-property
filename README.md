@@ -1,4 +1,4 @@
-# eslint-no-excess-property
+# eslint-plugin-no-excess-property
 
 [![npm version](https://badge.fury.io/js/eslint-plugin-no-excess-property.svg)](https://badge.fury.io/js/eslint-plugin-no-excess-property)
 
@@ -7,7 +7,7 @@ This project provides an ESLint rule to prohibit excess properties in object ass
 ## Installation
 
 ```sh
-npm install eslint-plugin-no-excess-property --save-dev
+npm install eslint eslint-plugin-no-excess-property --save-dev
 ```
 
 ## Usage
@@ -79,6 +79,18 @@ const func3: Func = (user) => {
   }
   return okTarget; // OK
 };
+```
+
+## Exceptions
+
+```ts
+class BaseUser {
+  name: string;
+}
+class ExtendedUser extends BaseUser {
+  age: number;
+}
+const user: BaseUser = new ExtendedUser(); // OK
 ```
 
 ## License
