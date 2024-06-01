@@ -36,6 +36,7 @@ export class TypeUtil {
         ts.TypeFlags.Void,
         ts.TypeFlags.Any,
         ts.TypeFlags.Unknown,
+        ts.TypeFlags.Null,
         ts.TypeFlags.Never,
       ].includes(initType.flags) ||
       initType.flags <= 2048
