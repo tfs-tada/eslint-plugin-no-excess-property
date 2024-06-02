@@ -159,7 +159,7 @@ ruleTester.run("no-excess-property-func", rule, {
         return { jiro }
       }
       `,
-      errors
+      errors,
     },
     {
       code: `
@@ -169,7 +169,7 @@ ruleTester.run("no-excess-property-func", rule, {
         return { jiro }
       }
       `,
-      errors
+      errors,
     },
     {
       code: `

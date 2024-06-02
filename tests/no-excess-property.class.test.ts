@@ -48,6 +48,5 @@ ruleTester.run("no-excess-property", rule, {
       `,
     },
   ],
-  invalid: [
-  ],
+  invalid: [],
 });

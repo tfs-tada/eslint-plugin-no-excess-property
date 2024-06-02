@@ -3,7 +3,7 @@ import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
 import { Checker, TypeUtil } from "./util";
 
 const createRule = ESLintUtils.RuleCreator(
-  (name) => `https://npmjs.com/package/${name}`
+  (name) => `https://npmjs.com/package/${name}`,
 );
 
 export = createRule({
@@ -17,12 +17,12 @@ export = createRule({
 
     const checkReturnStatement = (
       returnStatements: TSESTree.ReturnStatement[],
-      returnTypes: ts.Type[]
+      returnTypes: ts.Type[],
     ) => {
       for (const returnStatement of returnStatements) {
         if (!returnStatement.argument) return;
         const returnStatementRawNode = checker.getTypeAtLocation(
-          parserServices.esTreeNodeToTSNodeMap!.get(returnStatement.argument)
+          parserServices.esTreeNodeToTSNodeMap!.get(returnStatement.argument),
         );
         const returnStatementNode =
           checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
@@ -34,8 +34,8 @@ export = createRule({
               typeof typeUtil.checkProperties(
                 returnStatementNode,
                 type,
-                true
-              ) === "object"
+                true,
+              ) === "object",
           )
         ) {
           context.report({
@@ -79,7 +79,7 @@ export = createRule({
           if (result.length > 0 && result.every((e) => typeof e === "object")) {
             const reportTarget = result.find(
               (e): e is { property: string; objectName: string } =>
-                typeof e === "object"
+                typeof e === "object",
             );
             context.report({
               node,
@@ -110,7 +110,7 @@ export = createRule({
           }
           if (node.init !== null && "body" in node.init) {
             const returnStatementRawNode = checker.getTypeAtLocation(
-              parserServices.esTreeNodeToTSNodeMap!.get(node.init.body)
+              parserServices.esTreeNodeToTSNodeMap!.get(node.init.body),
             );
             const returnStatementNode =
               checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
@@ -122,8 +122,8 @@ export = createRule({
                   typeof typeUtil.checkProperties(
                     returnStatementNode,
                     type,
-                    true
-                  ) === "object"
+                    true,
+                  ) === "object",
               )
             ) {
               context.report({
@@ -143,17 +143,17 @@ export = createRule({
         }
 
         const initType = checker.getTypeAtLocation(
-          parserServices.esTreeNodeToTSNodeMap.get(node.init)
+          parserServices.esTreeNodeToTSNodeMap.get(node.init),
         );
 
         const idType = checker.getTypeAtLocation(
-          parserServices.esTreeNodeToTSNodeMap.get(node.id)
+          parserServices.esTreeNodeToTSNodeMap.get(node.id),
         );
 
         const excessPropertyData = typeUtil.checkProperties(
           initType,
           idType,
-          true
+          true,
         );
         if (typeof excessPropertyData === "object") {
           context.report({

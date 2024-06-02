@@ -106,17 +106,17 @@ const user: BaseUser = new ExtendedUser(); // OK
 Types registered in “skipwords” are not inspected.
 
 ```json
-  "rules": {
-    "no-excess-property/no-excess-property": [
-      "error",
-      { "skipWords": ["Element"] }
-    ]
-  },
+"rules": {
+  "no-excess-property/no-excess-property": [
+    "error",
+    { "skipWords": ["Element"] }
+  ]
+},
 ```
 
 ```ts
 type Element = { name: string };
-const taro = { name: "Taro", age: 20};
+const taro = { name: "Taro", age: 20 };
 const element: Element = taro; // OK
 ```
 

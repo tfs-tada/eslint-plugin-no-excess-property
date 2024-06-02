@@ -75,7 +75,7 @@ ruleTester.run("no-excess-property", rule, {
       code: `      
       type Props<T> = { data: T[] };
       const hoge: Props<{ name: string | null }> = { data: [{ name: "taro" }] }; 
-      `
+      `,
     },
   ],
   invalid: [],

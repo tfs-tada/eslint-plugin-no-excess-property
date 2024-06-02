@@ -10,11 +10,11 @@ export class TypeUtil {
   constructor(
     private checker: Checker,
     private parserServices: Partial<ParserServices>,
-    private skipWords: string[]
+    private skipWords: string[],
   ) {}
 
   findReturnStatements = (
-    node: TSESTree.Statement
+    node: TSESTree.Statement,
   ): TSESTree.ReturnStatement[] => {
     if (node.type === "ReturnStatement") {
       return [node];
@@ -33,7 +33,7 @@ export class TypeUtil {
           childNode?.type !== "TSInterfaceBody" &&
           childNode?.type !== "TSModuleBlock"
             ? this.findReturnStatements(childNode)
-            : []
+            : [],
         );
     }
     if (node.type === "IfStatement") {
@@ -47,7 +47,7 @@ export class TypeUtil {
   };
 
   getReturnTypes = (
-    node: TSESTree.VariableDeclarator | TSESTree.FunctionDeclaration
+    node: TSESTree.VariableDeclarator | TSESTree.FunctionDeclaration,
   ): ts.Type[] => {
     const tsNode = this.parserServices.esTreeNodeToTSNodeMap!.get(node);
     const type = this.checker.getTypeAtLocation(tsNode);
@@ -55,7 +55,7 @@ export class TypeUtil {
     const returnRawTypes =
       signature?.map((sig) => this.checker.getReturnTypeOfSignature(sig)) ?? [];
     const returnTypes = returnRawTypes.map(
-      (e) => this.checker.getPromisedTypeOfPromise(e) ?? e
+      (e) => this.checker.getPromisedTypeOfPromise(e) ?? e,
     );
     return returnTypes;
   };
@@ -63,12 +63,12 @@ export class TypeUtil {
   checkProperties = (
     initType: ts.Type,
     idType: ts.Type,
-    skipClass: boolean
+    skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
     // Check if idType is a Union
     if (idType.isUnion()) {
       const result = idType.types.map((type) =>
-        this.checkProperties(initType, type, skipClass)
+        this.checkProperties(initType, type, skipClass),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       const returnFalseFlag = result.find((res) => res === false);
@@ -111,7 +111,7 @@ export class TypeUtil {
     }
 
     // skipword
-    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false
+    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false;
     if (idTypeName && this.skipWords.includes(idTypeName)) {
       return false;
     }
@@ -133,7 +133,7 @@ export class TypeUtil {
         const retunObject = this.checkProperties(
           initElementType,
           idElementType,
-          skipClass
+          skipClass,
         );
         if (typeof retunObject === "object") {
           return retunObject;
@@ -150,7 +150,7 @@ export class TypeUtil {
         const retunObject = this.checkProperties(
           initElement,
           idElements[idx],
-          skipClass
+          skipClass,
         );
         if (typeof retunObject === "object") {
           return retunObject;
@@ -169,14 +169,14 @@ export class TypeUtil {
         if (!prop.valueDeclaration) continue;
         const initPropType = this.checker.getTypeOfSymbolAtLocation(
           prop,
-          prop.valueDeclaration
+          prop.valueDeclaration,
         );
         if (!idIndexType) continue;
 
         const retunObject = this.checkProperties(
           initPropType,
           idIndexType,
-          skipClass
+          skipClass,
         );
         if (typeof retunObject === "object") {
           return retunObject;
@@ -197,7 +197,7 @@ export class TypeUtil {
           "hasOwnProperty",
           "isPrototypeOf",
           "propertyIsEnumerable",
-        ].includes(t.name)
+        ].includes(t.name),
     );
 
     if (filterdIdProps.length === 0) return false;
@@ -219,17 +219,17 @@ export class TypeUtil {
       }
       const initPropType = this.checker.getTypeOfSymbolAtLocation(
         prop,
-        prop.valueDeclaration
+        prop.valueDeclaration,
       );
       const idPropType = this.checker.getTypeOfSymbolAtLocation(
         idProp,
-        idProp.valueDeclaration
+        idProp.valueDeclaration,
       );
 
       const retunObject = this.checkProperties(
         initPropType,
         idPropType,
-        skipClass
+        skipClass,
       );
       if (typeof retunObject === "object") {
         return retunObject;
