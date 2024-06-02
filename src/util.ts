@@ -7,8 +7,11 @@ export type Checker = ts.TypeChecker & {
 };
 
 export class TypeUtil {
-  constructor(private checker: Checker, private parserServices: Partial<ParserServices>) {
-  }
+  constructor(
+    private checker: Checker,
+    private parserServices: Partial<ParserServices>,
+    private skipWords: string[]
+  ) {}
 
   findReturnStatements = (
     node: TSESTree.Statement
@@ -101,10 +104,16 @@ export class TypeUtil {
         ts.TypeFlags.Null,
         ts.TypeFlags.Undefined,
         ts.TypeFlags.VoidLike,
-      ].includes(idType.flags) || 
+      ].includes(idType.flags) ||
       idType.flags <= 2048
     ) {
       return "skip";
+    }
+
+    // skipword
+    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false
+    if (idTypeName && this.skipWords.includes(idTypeName)) {
+      return false;
     }
 
     // circular structure

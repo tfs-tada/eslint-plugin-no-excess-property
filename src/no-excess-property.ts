@@ -12,7 +12,8 @@ export = createRule({
     const checker = parserServices?.program?.getTypeChecker() as Checker;
 
     if (!checker || !parserServices) return {};
-    const typeUtil = new TypeUtil(checker, parserServices);
+    const skipWords = context.options[0]?.skipWords ?? [];
+    const typeUtil = new TypeUtil(checker, parserServices, skipWords);
 
     const checkReturnStatement = (
       returnStatements: TSESTree.ReturnStatement[],
@@ -28,8 +29,13 @@ export = createRule({
           returnStatementRawNode;
 
         if (
-          returnTypes.every((type) =>
-            typeUtil.checkProperties(returnStatementNode, type, true)
+          returnTypes.every(
+            (type) =>
+              typeof typeUtil.checkProperties(
+                returnStatementNode,
+                type,
+                true
+              ) === "object"
           )
         ) {
           context.report({
@@ -111,8 +117,13 @@ export = createRule({
               returnStatementRawNode;
 
             if (
-              returnTypes.every((type) =>
-                typeUtil.checkProperties(returnStatementNode, type, true)
+              returnTypes.every(
+                (type) =>
+                  typeof typeUtil.checkProperties(
+                    returnStatementNode,
+                    type,
+                    true
+                  ) === "object"
               )
             ) {
               context.report({
@@ -166,8 +177,22 @@ export = createRule({
         "Object has property not present {{ excessProperty }} in type",
       "no-excess-property-func": "Object has property not present in type",
     },
-    schema: [],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          skipWords: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+            uniqueItems: true,
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
   name: "no-excess-property",
-  defaultOptions: [],
+  defaultOptions: [{ skipWords: [] as string[] }],
 });
