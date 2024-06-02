@@ -18,9 +18,16 @@ Add the following to your ESLint configuration file (such as .eslintrc):
 {
   "plugins": ["no-excess-property"],
   "rules": {
-    "no-excess-property/no-excess-property": "error"
+    "no-excess-property/no-excess-property": [
+      "error",
+      { "skipWords": ["UncheckedTypeName"] }
+    ]
   },
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "project": ["./tsconfig.json"]
+  }
 }
 ```
 
@@ -90,6 +97,27 @@ class ExtendedUser extends BaseUser {
   age: number;
 }
 const user: BaseUser = new ExtendedUser(); // OK
+```
+
+## Setting
+
+### Skipwords
+
+Types registered in “skipwords” are not inspected.
+
+```json
+  "rules": {
+    "no-excess-property/no-excess-property": [
+      "error",
+      { "skipWords": ["Element"] }
+    ]
+  },
+```
+
+```ts
+type Element = { name: string };
+const taro = { name: "Taro", age: 20};
+const element: Element = taro; // OK
 ```
 
 ## License
