@@ -18,33 +18,22 @@ Add the following to your ESLint configuration file (such as .eslintrc):
 {
   "plugins": ["no-excess-property"],
   "rules": {
-    "no-excess-property/no-excess-property": "error",
-    "no-excess-property/no-excess-property-func": "error",
+    "no-excess-property/no-excess-property": "error"
   },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2015,
-    "sourceType": "module",
-    "project": ["./tsconfig.json"],
-    "tsconfigRootDir": __dirname,
-  },
+  "parser": "@typescript-eslint/parser"
 }
 ```
 
-## Rules
-
-`no-excess-propertiy` & `no-excess-property-func`
-
-This rule prohibits excess properties in object assignments.
-
 ## Example
+
+### Object
 
 ```typescript
 type User = { name: string };
-const taro = { name: 'Taro' };
+const taro = { name: "Taro" };
 const user1: User = taro; // OK
 
-const jiro = { name: 'Jiro', age: 20 };
+const jiro = { name: "Jiro", age: 20 };
 const user2: User = jiro; // Error
 
 const users: User[] = [taro, jiro]; // Error
@@ -53,6 +42,14 @@ const dummyUsers2: User[] = [...Array(10)].map((_, idx) => ({
   name: `${idx}`,
   age: idx,
 })); // Error
+```
+
+### Function
+
+```ts
+type User = { name: string };
+const taro = { name: "Taro" };
+const jiro = { name: "Jiro", age: 20 };
 
 const func = (user: User) => {};
 func(taro); // OK
@@ -82,6 +79,8 @@ const func3: Func = (user) => {
 ```
 
 ## Exceptions
+
+### Class
 
 ```ts
 class BaseUser {

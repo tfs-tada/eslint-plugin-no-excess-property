@@ -9,7 +9,7 @@ const ruleTester = new TSESLint.RuleTester({
   },
 });
 
-ruleTester.run("no-excess-property", rule, {
+ruleTester.run("no-excess-property-func", rule, {
   valid: [
     {
       code: `

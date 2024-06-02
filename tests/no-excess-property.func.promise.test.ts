@@ -1,5 +1,5 @@
 import { TSESLint } from "@typescript-eslint/utils";
-import rule from "../src/no-excess-property-func";
+import rule from "../src/no-excess-property";
 
 const ruleTester = new TSESLint.RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),

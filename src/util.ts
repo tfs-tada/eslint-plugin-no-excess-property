@@ -1,14 +1,62 @@
+import { ParserServices, TSESTree } from "@typescript-eslint/utils";
 import ts from "typescript";
 
 export type Checker = ts.TypeChecker & {
   getElementTypeOfArrayType: (type: ts.Type) => ts.Type | undefined;
+  getPromisedTypeOfPromise: (type: ts.Type) => ts.Type | undefined;
 };
 
 export class TypeUtil {
-  private checker: Checker;
-  constructor(checker: Checker) {
-    this.checker = checker;
+  constructor(private checker: Checker, private parserServices: Partial<ParserServices>) {
   }
+
+  findReturnStatements = (
+    node: TSESTree.Statement
+  ): TSESTree.ReturnStatement[] => {
+    if (node.type === "ReturnStatement") {
+      return [node];
+    }
+
+    if (node.type === "FunctionDeclaration") {
+      return [];
+    }
+
+    if ("body" in node) {
+      return [node.body]
+        .flat(2)
+        .flatMap((childNode) =>
+          !!childNode &&
+          childNode?.type !== "ClassBody" &&
+          childNode?.type !== "TSInterfaceBody" &&
+          childNode?.type !== "TSModuleBlock"
+            ? this.findReturnStatements(childNode)
+            : []
+        );
+    }
+    if (node.type === "IfStatement") {
+      return [
+        this.findReturnStatements(node.consequent),
+        node.alternate ? this.findReturnStatements(node.alternate) : undefined,
+      ].flatMap((e) => e ?? []);
+    }
+
+    return [];
+  };
+
+  getReturnTypes = (
+    node: TSESTree.VariableDeclarator | TSESTree.FunctionDeclaration
+  ): ts.Type[] => {
+    const tsNode = this.parserServices.esTreeNodeToTSNodeMap!.get(node);
+    const type = this.checker.getTypeAtLocation(tsNode);
+    const signature = type.getCallSignatures();
+    const returnRawTypes =
+      signature?.map((sig) => this.checker.getReturnTypeOfSignature(sig)) ?? [];
+    const returnTypes = returnRawTypes.map(
+      (e) => this.checker.getPromisedTypeOfPromise(e) ?? e
+    );
+    return returnTypes;
+  };
+
   checkProperties = (
     initType: ts.Type,
     idType: ts.Type,
@@ -37,6 +85,7 @@ export class TypeUtil {
         ts.TypeFlags.Any,
         ts.TypeFlags.Unknown,
         ts.TypeFlags.Null,
+        ts.TypeFlags.Undefined,
         ts.TypeFlags.Never,
       ].includes(initType.flags) ||
       initType.flags <= 2048
