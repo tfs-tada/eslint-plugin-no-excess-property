@@ -71,7 +71,7 @@ ruleTester.run("no-excess-property", rule, {
       const sampleUser: User = jiro;
       `,
       options: [{ skipWords: ["user"] }],
-      errors
+      errors,
     },
     {
       code: `
@@ -81,7 +81,7 @@ ruleTester.run("no-excess-property", rule, {
       createUser(jiro);
       `,
       options: [{ skipWords: ["HogeType"] }],
-      errors
+      errors,
     },
     {
       code: `
