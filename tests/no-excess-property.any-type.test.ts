@@ -156,6 +156,13 @@ ruleTester.run("no-excess-property", rule, {
       addUser(Jiro);
       `,
     },
+    {
+      code: `
+      type Users = { name: string }[] | []
+      const taro = { name: "taro" };
+      const users: Users = [];
+      `,
+    },
   ],
   invalid: [],
 });
