@@ -61,10 +61,15 @@ export class TypeUtil {
   };
 
   checkProperties = (
-    initType: ts.Type,
-    idType: ts.Type,
+    initType: ts.Type | undefined,
+    idType: ts.Type | undefined,
     skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
+
+    if(typeof idType === "undefined" || typeof initType === "undefined") {
+      return false
+    }
+
     // Check if idType is a Union
     if (idType.isUnion()) {
       const result = idType.types.map((type) =>
