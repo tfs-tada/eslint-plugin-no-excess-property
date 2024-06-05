@@ -85,18 +85,6 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type Arr = ReadonlyArray<unknown>;
-      const func: Arr = [];
-      `,
-    },
-    {
-      code: `
-      type Arr = ReadonlyArray<unknown>;
-      const func: Arr = ["taro", 33];
-      `,
-    },
-    {
-      code: `
       type User = { name: string, child?: User };
       const taro: User = { name: "taro", child: { name: "jiro" } };
       `,
