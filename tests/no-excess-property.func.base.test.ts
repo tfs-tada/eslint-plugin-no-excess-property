@@ -154,11 +154,11 @@ ruleTester.run("no-excess-property-func", rule, {
     {
       code: `
       type User = { name: string };
-      type UserFunc = () => User;
+      type UserFunc = () => User[];
       const jiro = { name: "jiro" };
       const createUsers: UserFunc = () => {
-        const users = [jiro].map(user=>({...user, age: 20}))
-        return users
+        const users = [jiro].map((user) => ({ ...user, age: 20 }));
+        return users;
       };
       `,
       errors,

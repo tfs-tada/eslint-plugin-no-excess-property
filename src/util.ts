@@ -65,9 +65,17 @@ export class TypeUtil {
     idType: ts.Type | undefined,
     skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
+    if (typeof idType === "undefined" || typeof initType === "undefined") {
+      return false;
+    }
 
-    if(typeof idType === "undefined" || typeof initType === "undefined") {
-      return false
+    // Check if initType is a Union
+    if (initType.isUnion()) {
+      const result = initType.types.map((type) =>
+        this.checkProperties(type, idType, skipClass),
+      );
+      const returnObjectFlag = result.find((res) => typeof res === "object");
+      return returnObjectFlag ?? false;
     }
 
     // Check if idType is a Union
