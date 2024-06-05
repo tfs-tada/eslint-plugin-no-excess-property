@@ -54,7 +54,7 @@ ruleTester.run("no-excess-property", rule, {
       type TypeB = { name: string, age: number };
       const taro = { name: "taro", age: 33 } as TypeA | TypeB;
       const sampleUser: TypeA | TypeB = taro;
-      `
+      `,
     },
   ],
   invalid: [
@@ -75,7 +75,7 @@ ruleTester.run("no-excess-property", rule, {
       const taro = { name: "taro", age: 33 } as TypeA | TypeB;
       const sampleUser: TypeC | TypeD = taro;
       `,
-      errors
+      errors,
     },
   ],
 });
