@@ -115,5 +115,13 @@ ruleTester.run("no-excess-property", rule, {
       `,
       errors,
     },
+    {
+      code: `
+      type Users = { name: string }[] | { age: number }[]
+      const jiro = { name: "jiro", age: 10 };
+      const users: Users = [jiro];
+      `,
+      errors,
+    },
   ],
 });
