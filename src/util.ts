@@ -61,14 +61,10 @@ export class TypeUtil {
   };
 
   checkProperties = (
-    initType: ts.Type | undefined,
-    idType: ts.Type | undefined,
+    initType: ts.Type,
+    idType: ts.Type,
     skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
-    if (typeof idType === "undefined" || typeof initType === "undefined") {
-      return false;
-    }
-
     // Check if initType is a Union
     if (initType.isUnion()) {
       const result = initType.types.map((type) =>
@@ -92,7 +88,6 @@ export class TypeUtil {
       [
         ts.TypeFlags.Any,
         ts.TypeFlags.Unknown,
-        ts.TypeFlags.Never,
         ts.TypeFlags.NonPrimitive,
         ts.TypeFlags.TypeParameter,
       ].includes(idType.flags) ||
@@ -115,6 +110,7 @@ export class TypeUtil {
         ts.TypeFlags.EnumLiteral,
         ts.TypeFlags.Void,
         ts.TypeFlags.Null,
+        ts.TypeFlags.Never,
         ts.TypeFlags.Undefined,
         ts.TypeFlags.VoidLike,
       ].includes(idType.flags) ||
@@ -141,35 +137,32 @@ export class TypeUtil {
     // Check if idType is an array
     if (this.checker.isArrayType(idType)) {
       const idElementType = this.checker.getElementTypeOfArrayType(idType);
-      const initElementType = this.checker.getElementTypeOfArrayType(initType);
-      if (!!initElementType && !!idElementType) {
-        const retunObject = this.checkProperties(
-          initElementType,
-          idElementType,
-          skipClass,
+      const initElementTypes = [
+        this.checker.getElementTypeOfArrayType(initType) ??
+          this.checker.getTypeArguments(initType as any),
+      ].flat();
+      if (!!idElementType) {
+        const result = initElementTypes.map((init) =>
+          this.checkProperties(init, idElementType, skipClass),
         );
-        if (typeof retunObject === "object") {
-          return retunObject;
-        }
+        const returnObjectFlag = result.find((res) => typeof res === "object");
+        const returnFalseFlag = result.find((res) => res === false);
+        return returnObjectFlag ?? returnFalseFlag ?? "skip";
       }
-      return false;
+      return "skip";
     }
 
     // check if idType is a tuple
     if (this.checker.isTupleType(idType)) {
       const idElements = this.checker.getTypeArguments(idType as any);
       const initElements = this.checker.getTypeArguments(initType as any);
-      for (const [idx, initElement] of initElements.entries()) {
-        const retunObject = this.checkProperties(
-          initElement,
-          idElements[idx],
-          skipClass,
-        );
-        if (typeof retunObject === "object") {
-          return retunObject;
-        }
-      }
-      return false;
+      if (idElements.length !== initElements.length) return "skip";
+      const result = initElements.map((init, idx) =>
+        this.checkProperties(init, idElements[idx], skipClass),
+      );
+      const returnObjectFlag = result.find((res) => typeof res === "object");
+      const returnFalseFlag = result.find((res) => res === false);
+      return returnObjectFlag ?? returnFalseFlag ?? "skip";
     }
 
     // Check if idType has an index signature

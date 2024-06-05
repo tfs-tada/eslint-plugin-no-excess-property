@@ -123,5 +123,29 @@ ruleTester.run("no-excess-property", rule, {
       `,
       errors,
     },
+    {
+      code: `
+      type User = { name: string } | never
+      const jiro = { name: "jiro", age: 10 };
+      const users: User = jiro;
+      `,
+      errors,
+    },
+    {
+      code: `
+      type Users = { name: string }[] | never[]
+      const jiro = { name: "jiro", age: 10 };
+      const users: Users = [jiro];
+      `,
+      errors,
+    },
+    {
+      code: `
+      type Users = { name: string }[] | []
+      const jiro = { name: "jiro", age: 10 };
+      const users: Users = [jiro];
+      `,
+      errors,
+    },
   ],
 });
