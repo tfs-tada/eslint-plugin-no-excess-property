@@ -41,7 +41,7 @@ ruleTester.run("no-excess-property", rule, {
     {
       code: `
       type User = { name: string };
-      const name = { name: "taro" };
+      const name = "taro";
       const sampleUser: User = { name };
       `,
     },

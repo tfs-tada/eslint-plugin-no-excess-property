@@ -61,13 +61,22 @@ export class TypeUtil {
   };
 
   checkProperties = (
-    initType: ts.Type,
-    idType: ts.Type,
+    initRawType: ts.Type,
+    idRawType: ts.Type,
     skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
+    const initType =
+      this.checker.getPromisedTypeOfPromise(initRawType) ?? initRawType;
+    const idType =
+      this.checker.getPromisedTypeOfPromise(idRawType) ?? idRawType;
+
     // skipword
+    const idRawTypeName = idRawType.aliasSymbol?.name ?? idRawType.symbol?.name;
     const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false;
-    if (idTypeName && this.skipWords.includes(idTypeName)) {
+    if (
+      (idTypeName && this.skipWords.includes(idTypeName)) ||
+      (idRawTypeName && this.skipWords.includes(idRawTypeName))
+    ) {
       return false;
     }
 

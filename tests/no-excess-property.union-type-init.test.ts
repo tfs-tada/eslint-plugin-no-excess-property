@@ -19,30 +19,30 @@ ruleTester.run("no-excess-property", rule, {
   valid: [
     {
       code: `
-      type User = { name: string, tel?: number };
+      type User = { name: string, tel?: string };
       const taro = { name: "taro" } as { name: string } | User
       const sampleUser: User = taro;
       `,
     },
     {
       code: `
-      type User = { name: string, tel?: number };
+      type User = { name: string, tel?: string };
       const taro = { name: "taro" } as User | { name: string }
       const sampleUser: User = taro;
       `,
     },
     {
       code: `
-      type TypeA = { name: string, tel?: number };
+      type TypeA = { name: string, tel?: string };
       type TypeB = { name: string, age: number };
-      type TypeC = { name: string, tel?: number, age?: number };
+      type TypeC = { name: string, tel?: string, age?: number };
       const taro = { name: "taro" } as TypeA | TypeB;
       const sampleUser: TypeC = taro;
       `,
     },
     {
       code: `
-      type TypeA = { name: string, tel?: number };
+      type TypeA = { name: string, tel?: string };
       type TypeB = { name: string, age: number };
       const taro = { name: "taro" } as TypeA | TypeB;
       const sampleUser: TypeA | TypeB = taro;
@@ -50,7 +50,7 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type TypeA = { name: string, tel?: number };
+      type TypeA = { name: string, tel?: string };
       type TypeB = { name: string, age: number };
       const taro = { name: "taro", age: 33 } as TypeA | TypeB;
       const sampleUser: TypeA | TypeB = taro;
@@ -61,14 +61,14 @@ ruleTester.run("no-excess-property", rule, {
     {
       code: `
       type User = { name?: string, age?: number };
-      const taro = { name: "taro" } as { name: string, tel: number } | { age: number };
+      const taro = { name: "taro" } as { name: string, tel: string } | { age: number };
       const user: User = taro;
       `,
       errors,
     },
     {
       code: `
-      type TypeA = { name: string, tel?: number };
+      type TypeA = { name: string, tel?: string };
       type TypeB = { name: string, age: number };
       type TypeC = { name: string };
       type TypeD = { name: string, age: number };
