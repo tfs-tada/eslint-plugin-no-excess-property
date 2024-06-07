@@ -62,6 +62,16 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [{ skipWords: ["Blob"] }],
     },
+    {
+      code: `
+      type Human = { name: string };
+      type Robot = { age: number };
+      type User = Human | Robot;
+      const jiro = { name: "jiro", age: 10 };
+      const sampleUser: User = jiro;
+      `,
+      options: [{ skipWords: ["User"] }],
+    },
   ],
   invalid: [
     {

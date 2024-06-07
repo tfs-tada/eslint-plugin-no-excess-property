@@ -65,6 +65,12 @@ export class TypeUtil {
     idType: ts.Type,
     skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
+    // skipword
+    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false;
+    if (idTypeName && this.skipWords.includes(idTypeName)) {
+      return false;
+    }
+
     // Check if initType is a Union
     if (initType.isUnion()) {
       const result = initType.types.map((type) =>
@@ -117,12 +123,6 @@ export class TypeUtil {
       idType.flags <= 2048
     ) {
       return "skip";
-    }
-
-    // skipword
-    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false;
-    if (idTypeName && this.skipWords.includes(idTypeName)) {
-      return false;
     }
 
     // circular structure
