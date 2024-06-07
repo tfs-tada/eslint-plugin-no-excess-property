@@ -29,7 +29,7 @@ ruleTester.run("no-excess-property", rule, {
 
     {
       code: `      
-      const fn = <T>(obj: T): { toBe: (o: T) => void } => ({
+      const fn = <T,>(obj: T): { toBe: (o: T) => void } => ({
         toBe: () => console.log(obj),
       });
       const func = <T extends object | string>(
@@ -42,7 +42,7 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      const fn = <T>(obj: T): { toBe: (o: T) => void } => ({
+      const fn = <T,>(obj: T): { toBe: (o: T) => void } => ({
         toBe: () => console.log(obj),
       });
       const func = <T extends object | string>(
@@ -55,7 +55,7 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type Uniq = <T>(array: T[]) => T[] | null | undefined;
+      type Uniq = <T,>(array: T[]) => T[] | null | undefined;
       const uniq: Uniq = (array) => {
         return undefined;
       };
@@ -64,7 +64,7 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type Uniq = <T>(array: T[]) => T[] | null | undefined;
+      type Uniq = <T,>(array: T[]) => T[] | null | undefined;
       const uniq: Uniq = (array) => {
         return undefined;
       };

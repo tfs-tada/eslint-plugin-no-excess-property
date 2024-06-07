@@ -21,12 +21,9 @@ export = createRule({
     ) => {
       for (const returnStatement of returnStatements) {
         if (!returnStatement.argument) return;
-        const returnStatementRawNode = checker.getTypeAtLocation(
+        const returnStatementNode = checker.getTypeAtLocation(
           parserServices.esTreeNodeToTSNodeMap!.get(returnStatement.argument),
         );
-        const returnStatementNode =
-          checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
-          returnStatementRawNode;
 
         if (
           returnTypes.every(
@@ -109,12 +106,9 @@ export = createRule({
             return;
           }
           if (node.init !== null && "body" in node.init) {
-            const returnStatementRawNode = checker.getTypeAtLocation(
+            const returnStatementNode = checker.getTypeAtLocation(
               parserServices.esTreeNodeToTSNodeMap!.get(node.init.body),
             );
-            const returnStatementNode =
-              checker.getPromisedTypeOfPromise(returnStatementRawNode) ??
-              returnStatementRawNode;
 
             if (
               returnTypes.every(
