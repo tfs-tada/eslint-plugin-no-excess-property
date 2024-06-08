@@ -3,6 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "files": ["estree.ts"],
+  "files": ["estree.ts", "estree.tsx"],
   "include": ["tests/**/*.ts"]
 }

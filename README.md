@@ -20,7 +20,7 @@ Add the following to your ESLint configuration file (such as .eslintrc):
   "rules": {
     "no-excess-property/no-excess-property": [
       "error",
-      { "skipWords": ["UncheckedTypeName"] }
+      { "skipWords": ["UncheckedTypeName"], "checkJsx": true }
     ]
   },
   "parser": "@typescript-eslint/parser",
@@ -101,24 +101,28 @@ const user: BaseUser = new ExtendedUser(); // OK
 
 ## Setting
 
-### Skipwords
-
-Types registered in “skipwords” are not inspected.
-
 ```json
 "rules": {
   "no-excess-property/no-excess-property": [
     "error",
-    { "skipWords": ["Element"] }
+    { "skipWords": ["UserElement"], "checkJsx": true }
   ]
 },
 ```
 
+### skipWords
+
+Types registered in “skipwords” are not inspected.
+
 ```ts
-type Element = { name: string };
+type UserElement = { name: string };
 const taro = { name: "Taro", age: 20 };
-const element: Element = taro; // OK
+const element: UserElement = taro; // OK
 ```
+
+### checkJsx
+
+If `false`, the rule does not check JSX attributes. default is `true`.
 
 ## License
 

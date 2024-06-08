@@ -13,6 +13,7 @@ export = createRule({
 
     if (!checker || !parserServices) return {};
     const skipWords = context.options[0]?.skipWords ?? [];
+    const checkJsx = context.options[0]?.checkJsx ?? true;
     const typeUtil = new TypeUtil(checker, parserServices, skipWords);
 
     const checkReturnStatement = (
@@ -51,6 +52,89 @@ export = createRule({
             .map((e) => typeUtil.findReturnStatements(e))
             .flat();
           checkReturnStatement(returnStatements, returnTypes);
+        }
+      },
+
+      JSXOpeningElement(node) {
+        if (!checkJsx) return;
+        const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
+        const tagNameNode = tsNode.tagName;
+        const componentSymbol = checker.getSymbolAtLocation(tagNameNode);
+        if (!componentSymbol) {
+          return;
+        }
+        const componentType = checker.getTypeOfSymbolAtLocation(
+          componentSymbol,
+          tagNameNode,
+        );
+        const jsxSignatures = componentType.getCallSignatures();
+        const allProps: Record<string, ts.Type> = {};
+        node.attributes.forEach((attribute) => {
+          if (attribute.type === "JSXSpreadAttribute") {
+            const attrNode = parserServices.esTreeNodeToTSNodeMap!.get(
+              attribute.argument,
+            );
+            const attrType = checker.getTypeAtLocation(attrNode);
+            attrType.getProperties().forEach((prop) => {
+              allProps[prop.name] = checker.getTypeOfSymbolAtLocation(
+                prop,
+                attrNode,
+              );
+            });
+          } else if (attribute.type === "JSXAttribute") {
+            const attrName = attribute.name.name;
+            if (typeof attrName !== "string") return;
+            const attrNode =
+              parserServices.esTreeNodeToTSNodeMap!.get(attribute);
+            const attrType = checker.getTypeAtLocation(attrNode);
+            allProps[attrName] = attrType;
+          }
+        });
+
+        const result = jsxSignatures
+          .map((sigType) => {
+            if (sigType.parameters.length === 0) return "skip";
+            const idTypeParent = sigType.getTypeParameterAtPosition(0);
+            const propertiesList = idTypeParent.isUnion()
+              ? idTypeParent.types
+              : [idTypeParent];
+            return propertiesList.map((idType) => {
+              const idTypeProperties = idType.getProperties();
+              const checkResult = Object.entries(allProps).map(
+                ([key, initType]) => {
+                  const idNode = idTypeProperties.find((e) => e.name === key);
+                  if (!idNode) return { property: key, objectName: "" };
+                  const idType = checker.getTypeOfSymbolAtLocation(
+                    idNode,
+                    tsNode,
+                  );
+                  return typeUtil.checkProperties(initType, idType, true);
+                },
+              );
+              return checkResult.some((e) => typeof e === "object")
+                ? checkResult.find(
+                    (e): e is { property: string; objectName: string } =>
+                      typeof e === "object",
+                  )
+                : false;
+            });
+          })
+          .flat()
+          .filter((e) => e !== "skip");
+
+        if (result.length > 0 && result.every((e) => typeof e === "object")) {
+          const reportTarget = result.find(
+            (e): e is { property: string; objectName: string } =>
+              typeof e === "object",
+          );
+          context.report({
+            node,
+            messageId: "no-excess-property",
+            data: {
+              objectName: reportTarget?.objectName,
+              excessProperty: reportTarget?.property,
+            },
+          });
         }
       },
 
@@ -180,11 +264,14 @@ export = createRule({
             },
             uniqueItems: true,
           },
+          checkJsx: {
+            type: "boolean",
+          },
         },
         additionalProperties: false,
       },
     ],
   },
   name: "no-excess-property",
-  defaultOptions: [{ skipWords: [] as string[] }],
+  defaultOptions: [{ skipWords: [] as string[], checkJsx: true }],
 });
