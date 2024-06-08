@@ -64,14 +64,12 @@ export = createRule({
             .getTypeAtLocation(tsNode)
             .getCallSignatures();
 
-          const result = tsSignatures.map((sigType) => {
-            const tsType = sigType.getTypeParameterAtPosition(idx);
-            try {
+          const result = tsSignatures
+            .map((sigType) => {
+              const tsType = sigType.getTypeParameterAtPosition(idx);
               return typeUtil.checkProperties(argType, tsType, true);
-            } catch {
-              return false;
-            }
-          });
+            })
+            .filter((e) => e !== "skip");
 
           if (result.length > 0 && result.every((e) => typeof e === "object")) {
             const reportTarget = result.find(
