@@ -97,8 +97,18 @@ ruleTester.run("no-excess-property", rule, {
         return props.dialog;
       };
       const app = <Components dialog={<></>} />;
-      `
-    }
+      `,
+    },
+    {
+      code: `
+      const Components = (props: { data: { name: string } }) => {
+        return <div>{props.data.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components data={user} />;
+      `,
+      options: [{ skipWords: [], checkJsx: false }],
+    },
     // todo: fix this
     // {
     //   code: `

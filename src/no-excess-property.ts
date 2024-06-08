@@ -13,6 +13,7 @@ export = createRule({
 
     if (!checker || !parserServices) return {};
     const skipWords = context.options[0]?.skipWords ?? [];
+    const checkJsx = context.options[0]?.checkJsx ?? true;
     const typeUtil = new TypeUtil(checker, parserServices, skipWords);
 
     const checkReturnStatement = (
@@ -55,6 +56,7 @@ export = createRule({
       },
 
       JSXOpeningElement(node) {
+        if (!checkJsx) return;
         const tsNode = parserServices.esTreeNodeToTSNodeMap!.get(node);
         const tagNameNode = tsNode.tagName;
         const componentSymbol = checker.getSymbolAtLocation(tagNameNode);
@@ -262,11 +264,14 @@ export = createRule({
             },
             uniqueItems: true,
           },
+          checkJsx: {
+            type: "boolean",
+          },
         },
         additionalProperties: false,
       },
     ],
   },
   name: "no-excess-property",
-  defaultOptions: [{ skipWords: [] as string[] }],
+  defaultOptions: [{ skipWords: [] as string[], checkJsx: true }],
 });
