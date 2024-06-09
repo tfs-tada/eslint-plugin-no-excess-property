@@ -65,6 +65,19 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
     },
+    {
+      code: `
+      class Fuga {
+        fuga() {}
+      }
+      class Hoge extends Fuga {
+        private hoge = 10;
+        private piyo() {}
+      }
+      const fuga: Fuga = new Hoge();
+      `,
+      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+    },
   ],
   invalid: [
     {
@@ -117,6 +130,20 @@ ruleTester.run("no-excess-property", rule, {
       class Hoge extends Fuga {
         private hoge() {}
         piyo() {}
+      }
+      const fuga: Fuga = new Hoge();
+      `,
+      errors,
+      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+    },
+    {
+      code: `
+      class Fuga {
+        fuga() {}
+      }
+      class Hoge extends Fuga {
+        hoge = 10;
+        private piyo() {}
       }
       const fuga: Fuga = new Hoge();
       `,
