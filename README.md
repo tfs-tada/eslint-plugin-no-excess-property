@@ -20,7 +20,11 @@ Add the following to your ESLint configuration file (such as .eslintrc):
   "rules": {
     "no-excess-property/no-excess-property": [
       "error",
-      { "skipWords": ["UncheckedTypeName"], "checkJsx": true }
+      {
+        "skipWords": ["UncheckedTypeName"],
+        "checkJsx": true,
+        "checkClass": false
+      }
     ]
   },
   "parser": "@typescript-eslint/parser",
@@ -49,6 +53,16 @@ const dummyUsers2: User[] = [...Array(10)].map((_, idx) => ({
   name: `${idx}`,
   age: idx,
 })); // Error
+```
+
+### JSX
+
+```tsx
+type Props = { name: string };
+const Component = (props: Props) => <div>{props.name}</div>;
+const user = { name: "Taro", age: 20 };
+const appOk = <Component name={user.name} />; // OK
+const appError = <Component {...user} />; // Error
 ```
 
 ### Function
@@ -85,34 +99,20 @@ const func3: Func = (user) => {
 };
 ```
 
-## Exceptions
-
-### Class
-
-```ts
-class BaseUser {
-  name: string;
-}
-class ExtendedUser extends BaseUser {
-  age: number;
-}
-const user: BaseUser = new ExtendedUser(); // OK
-```
-
 ## Setting
 
 ```json
 "rules": {
   "no-excess-property/no-excess-property": [
     "error",
-    { "skipWords": ["UserElement"], "checkJsx": true }
+    { "skipWords": ["UserElement"], "checkJsx": true, "checkClass": false }
   ]
 },
 ```
 
 ### skipWords
 
-Types registered in “skipwords” are not inspected.
+Types registered in `skipWords` are not inspected.
 
 ```ts
 type UserElement = { name: string };
@@ -123,6 +123,20 @@ const element: UserElement = taro; // OK
 ### checkJsx
 
 If `false`, the rule does not check JSX attributes. default is `true`.
+
+### checkClass
+
+If `false`, the rule does not check class properties. default is `false`.
+
+```ts
+class BaseUser {
+  name: string;
+}
+class ExtendedUser extends BaseUser {
+  age: number;
+}
+const user: BaseUser = new ExtendedUser(); // OK
+```
 
 ## License
 

@@ -11,6 +11,7 @@ export class TypeUtil {
     private checker: Checker,
     private parserServices: Partial<ParserServices>,
     private skipWords: string[],
+    private checkClass: boolean,
   ) {}
 
   findReturnStatements = (
@@ -63,7 +64,6 @@ export class TypeUtil {
   checkProperties = (
     initRawType: ts.Type,
     idRawType: ts.Type,
-    skipClass: boolean,
   ): false | "skip" | { property: string; objectName: string } => {
     const initType =
       this.checker.getPromisedTypeOfPromise(initRawType) ?? initRawType;
@@ -83,7 +83,7 @@ export class TypeUtil {
     // Check if initType is a Union
     if (initType.isUnion()) {
       const result = initType.types.map((type) =>
-        this.checkProperties(type, idType, skipClass),
+        this.checkProperties(type, idType),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       return returnObjectFlag ?? false;
@@ -92,7 +92,7 @@ export class TypeUtil {
     // Check if idType is a Union
     if (idType.isUnion()) {
       const result = idType.types.map((type) =>
-        this.checkProperties(initType, type, skipClass),
+        this.checkProperties(initType, type),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       const returnFalseFlag = result.find((res) => res === false);
@@ -139,7 +139,7 @@ export class TypeUtil {
       return false;
     }
 
-    if (skipClass && initType.isClass()) {
+    if (!this.checkClass && initType.isClass()) {
       return false;
     }
 
@@ -152,7 +152,7 @@ export class TypeUtil {
       ].flat();
       if (!!idElementType) {
         const result = initElementTypes.map((init) =>
-          this.checkProperties(init, idElementType, skipClass),
+          this.checkProperties(init, idElementType),
         );
         const returnObjectFlag = result.find((res) => typeof res === "object");
         const returnFalseFlag = result.find((res) => res === false);
@@ -167,7 +167,7 @@ export class TypeUtil {
       const initElements = this.checker.getTypeArguments(initType as any);
       if (idElements.length !== initElements.length) return "skip";
       const result = initElements.map((init, idx) =>
-        this.checkProperties(init, idElements[idx], skipClass),
+        this.checkProperties(init, idElements[idx]),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       const returnFalseFlag = result.find((res) => res === false);
@@ -188,11 +188,7 @@ export class TypeUtil {
         );
         if (!idIndexType) continue;
 
-        const retunObject = this.checkProperties(
-          initPropType,
-          idIndexType,
-          skipClass,
-        );
+        const retunObject = this.checkProperties(initPropType, idIndexType);
         if (typeof retunObject === "object") {
           return retunObject;
         }
@@ -201,7 +197,17 @@ export class TypeUtil {
     }
 
     const idProps = idType.getProperties();
-    const initProps = initType.getProperties();
+    const initProps = initType.getProperties().filter((prop) => {
+      if (!!prop.valueDeclaration) {
+        if (
+          ts.getCombinedModifierFlags(prop.valueDeclaration) ===
+          ts.ModifierFlags.Private
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
     const filterdIdProps = idProps.filter(
       (t) =>
         ![
@@ -241,11 +247,7 @@ export class TypeUtil {
         idProp.valueDeclaration,
       );
 
-      const retunObject = this.checkProperties(
-        initPropType,
-        idPropType,
-        skipClass,
-      );
+      const retunObject = this.checkProperties(initPropType, idPropType);
       if (typeof retunObject === "object") {
         return retunObject;
       }

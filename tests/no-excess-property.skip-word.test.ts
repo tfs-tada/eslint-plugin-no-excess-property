@@ -29,7 +29,7 @@ ruleTester.run("no-excess-property", rule, {
       const jiro = { name: "jiro", age: 10 };
       const sampleUser: User = jiro;
       `,
-      options: [{ skipWords: ["User"], checkJsx: false }],
+      options: [{ skipWords: ["User"], checkJsx: false, checkClass: false }],
     },
     {
       code: `
@@ -38,7 +38,7 @@ ruleTester.run("no-excess-property", rule, {
       const createUser = (user: User) => {};
       createUser(jiro);
       `,
-      options: [{ skipWords: ["User"], checkJsx: false }],
+      options: [{ skipWords: ["User"], checkJsx: false, checkClass: false }],
     },
     {
       code: `
@@ -46,13 +46,13 @@ ruleTester.run("no-excess-property", rule, {
         return file;
       };
       `,
-      options: [{ skipWords: ["Blob"], checkJsx: false }],
+      options: [{ skipWords: ["Blob"], checkJsx: false, checkClass: false }],
     },
     {
       code: `
       const func = (file: File): Blob => file;
       `,
-      options: [{ skipWords: ["Blob"], checkJsx: false }],
+      options: [{ skipWords: ["Blob"], checkJsx: false, checkClass: false }],
     },
     {
       code: `
@@ -60,7 +60,7 @@ ruleTester.run("no-excess-property", rule, {
         return file;
       };
       `,
-      options: [{ skipWords: ["Blob"], checkJsx: false }],
+      options: [{ skipWords: ["Blob"], checkJsx: false, checkClass: false }],
     },
     {
       code: `
@@ -70,7 +70,7 @@ ruleTester.run("no-excess-property", rule, {
       const jiro = { name: "jiro", age: 10 };
       const sampleUser: User = jiro;
       `,
-      options: [{ skipWords: ["User"], checkJsx: false }],
+      options: [{ skipWords: ["User"], checkJsx: false, checkClass: false }],
     },
   ],
   invalid: [
@@ -80,7 +80,7 @@ ruleTester.run("no-excess-property", rule, {
       const jiro = { name: "jiro", age: 10 };
       const sampleUser: User = jiro;
       `,
-      options: [{ skipWords: ["user"], checkJsx: false }],
+      options: [{ skipWords: ["user"], checkJsx: false, checkClass: false }],
       errors,
     },
     {
@@ -90,7 +90,9 @@ ruleTester.run("no-excess-property", rule, {
       const createUser = (user: User) => {};
       createUser(jiro);
       `,
-      options: [{ skipWords: ["HogeType"], checkJsx: false }],
+      options: [
+        { skipWords: ["HogeType"], checkJsx: false, checkClass: false },
+      ],
       errors,
     },
     {
@@ -99,14 +101,14 @@ ruleTester.run("no-excess-property", rule, {
         return file;
       };
       `,
-      options: [{ skipWords: ["File"], checkJsx: false }],
+      options: [{ skipWords: ["File"], checkJsx: false, checkClass: false }],
       errors: funcErrors,
     },
     {
       code: `
       const func = (file: File): Blob => file;
       `,
-      options: [{ skipWords: ["File"], checkJsx: false }],
+      options: [{ skipWords: ["File"], checkJsx: false, checkClass: false }],
       errors: funcErrors,
     },
     {
@@ -115,7 +117,7 @@ ruleTester.run("no-excess-property", rule, {
         return file;
       };
       `,
-      options: [{ skipWords: ["File"], checkJsx: false }],
+      options: [{ skipWords: ["File"], checkJsx: false, checkClass: false }],
       errors: funcErrors,
     },
   ],
