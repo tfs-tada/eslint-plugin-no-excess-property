@@ -59,14 +59,20 @@ ruleTester.run("no-excess-property", rule, {
       const sampleUser: Record<string, User> = { taro };
       `,
     },
-
     {
       code: `
-      type User = { name: string };
       const taro = { name: "taro" };
       const sampleUser: [key: string] = { taro };
       `,
     },
+    // todo: fix it
+    // {
+    //   code: `
+    //   type User = { [propertyName: \`data-\${string}\`]: string };
+    //   const taro = { "data-name": "taro" };
+    //   const sampleUser: User = taro;
+    //   `,
+    // },
   ],
   invalid: [
     {

@@ -14,7 +14,13 @@ export = createRule({
     if (!checker || !parserServices) return {};
     const skipWords = context.options[0]?.skipWords ?? [];
     const checkJsx = context.options[0]?.checkJsx ?? true;
-    const typeUtil = new TypeUtil(checker, parserServices, skipWords);
+    const checkClass = context.options[0]?.checkClass ?? false;
+    const typeUtil = new TypeUtil(
+      checker,
+      parserServices,
+      skipWords,
+      checkClass,
+    );
 
     const checkReturnStatement = (
       returnStatements: TSESTree.ReturnStatement[],
@@ -29,11 +35,8 @@ export = createRule({
         if (
           returnTypes.every(
             (type) =>
-              typeof typeUtil.checkProperties(
-                returnStatementNode,
-                type,
-                true,
-              ) === "object",
+              typeof typeUtil.checkProperties(returnStatementNode, type) ===
+              "object",
           )
         ) {
           context.report({
@@ -108,7 +111,7 @@ export = createRule({
                     idNode,
                     tsNode,
                   );
-                  return typeUtil.checkProperties(initType, idType, true);
+                  return typeUtil.checkProperties(initType, idType);
                 },
               );
               return checkResult.some((e) => typeof e === "object")
@@ -151,7 +154,7 @@ export = createRule({
           const result = tsSignatures
             .map((sigType) => {
               const tsType = sigType.getTypeParameterAtPosition(idx);
-              return typeUtil.checkProperties(argType, tsType, true);
+              return typeUtil.checkProperties(argType, tsType);
             })
             .filter((e) => e !== "skip");
 
@@ -195,11 +198,8 @@ export = createRule({
             if (
               returnTypes.every(
                 (type) =>
-                  typeof typeUtil.checkProperties(
-                    returnStatementNode,
-                    type,
-                    true,
-                  ) === "object",
+                  typeof typeUtil.checkProperties(returnStatementNode, type) ===
+                  "object",
               )
             ) {
               context.report({
@@ -226,11 +226,7 @@ export = createRule({
           parserServices.esTreeNodeToTSNodeMap.get(node.id),
         );
 
-        const excessPropertyData = typeUtil.checkProperties(
-          initType,
-          idType,
-          true,
-        );
+        const excessPropertyData = typeUtil.checkProperties(initType, idType);
         if (typeof excessPropertyData === "object") {
           context.report({
             node,
@@ -267,11 +263,16 @@ export = createRule({
           checkJsx: {
             type: "boolean",
           },
+          checkClass: {
+            type: "boolean",
+          },
         },
         additionalProperties: false,
       },
     ],
   },
   name: "no-excess-property",
-  defaultOptions: [{ skipWords: [] as string[], checkJsx: true }],
+  defaultOptions: [
+    { skipWords: [] as string[], checkJsx: true, checkClass: false },
+  ],
 });

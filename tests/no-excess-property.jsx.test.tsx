@@ -107,7 +107,7 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components data={user} />;
       `,
-      options: [{ skipWords: [], checkJsx: false }],
+      options: [{ skipWords: [], checkJsx: false, checkClass: false }],
     },
     // todo: fix this
     // {
@@ -159,6 +159,17 @@ ruleTester.run("no-excess-property", rule, {
       };
       const user = { name: "taro", age: 10 };
       const app = <Components data={user} isHuman />;
+      `,
+      errors,
+    },
+    {
+      code: `
+      type Props =
+        | ({ name: string } & { age: number })
+        | ({ name: string } & { id: string });
+      const Component = (props: Props) => <div>{props.name}</div>;
+      const user = { name: "Taro", age: 20, id: "user_id" };
+      <Component {...user} />;
       `,
       errors,
     },
