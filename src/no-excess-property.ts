@@ -103,6 +103,25 @@ export = createRule({
               : [idTypeParent];
             return propertiesList.map((idType) => {
               const idTypeProperties = idType.getProperties();
+              // todo: nested union type check
+              const indexTargets = idType.isUnionOrIntersection()
+                ? idType.types
+                : [idType];
+              const templateCheckRes = indexTargets.map((indexTarget) => {
+                // check if idType has mapped properties
+                if (
+                  "indexInfos" in indexTarget &&
+                  Array.isArray(indexTarget.indexInfos)
+                ) {
+                  const infos: any[] = indexTarget.indexInfos;
+                  const flags = infos.map((info) => info.keyType?.flags);
+                  // todo: template literal check
+                  if (flags.includes(ts.TypeFlags.TemplateLiteral)) return true;
+                }
+                return undefined;
+              });
+              if (templateCheckRes.includes(true)) return false;
+
               const checkResult = Object.entries(allProps).map(
                 ([key, initType]) => {
                   const idNode = idTypeProperties.find((e) => e.name === key);

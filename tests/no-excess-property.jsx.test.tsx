@@ -109,17 +109,36 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [{ skipWords: [], checkJsx: false, checkClass: false }],
     },
-    // todo: fix this
-    // {
-    //   code: `
-    //   type Props = {[K in \`data-\${string}\`]: string } & { age: number }
-    //   const Component = (props: Props) => {
-    //     return <div>{props["data-testid"]}</div>;
-    //   }
-    //   const user = { "data-testid": "file", age: 10 };
-    //   const a = <Component {...user} />;
-    //   `
-    // }
+    {
+      code: `
+      type Props = {[K in \`data-\${string}\`]: string } & { age: number }
+      const Component = (props: Props) => {
+        return <div>{}</div>;
+      }
+      const user = { "data-testid": "file", age: 10 };
+      const a = <Component {...user} />;
+      `,
+    },
+    {
+      code: `
+      type Props = { data: {[K in \`data-\${string}\`]: string }} & { age: number }
+      const Component = (props: Props) => {
+        return <div>{}</div>;
+      }
+      const user = { data: {"data-testid": "file"}, age: 10 };
+      const a = <Component data={user.data} age={user.age} />;
+      `,
+    },
+    {
+      code: `
+      type Props = { data: {[K in \`data-\${string}\`]: string } & { age: number }}
+      const Component = (props: Props) => {
+        return <div>{}</div>;
+      }
+      const user = { data: {"data-testid": "file", age: 10 }};
+      const a = <Component data={user.data} />;
+      `,
+    },
   ],
   invalid: [
     {
@@ -173,5 +192,17 @@ ruleTester.run("no-excess-property", rule, {
       `,
       errors,
     },
+    // todo: fix this
+    // {
+    //   code: `
+    //   type Props = {[K in \`data-\${string}\`]: string } & { age: number }
+    //   const Component = (props: Props) => {
+    //     return <div>{}</div>;
+    //   }
+    //   const user = { "data-testid": "file", age: 10, tel: "000-0000-0000" };
+    //   const a = <Component {...user} />;
+    //   `,
+    //   errors,
+    // },
   ],
 });
