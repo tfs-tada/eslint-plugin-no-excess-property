@@ -49,7 +49,7 @@ ruleTester.run("no-excess-property", rule, {
       code: `
       type User = { name: string };
       const taro = { name: "taro" };
-      const sampleUser: {[key: number | string]: User} = { 1 : taro, "2": taro };
+      const sampleUser: { [key: number | string]: User } = { 1: taro, "2": taro };
       `,
     },
     {
@@ -61,18 +61,36 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      const taro = { name: "taro" };
-      const sampleUser: [key: string] = { taro };
+      const taro = { name: "taro", age: "20" };
+      const sampleUser: { [key: string]: string; name: string } = taro;
       `,
     },
-    // todo: fix it
-    // {
-    //   code: `
-    //   type User = { [propertyName: \`data-\${string}\`]: string };
-    //   const taro = { "data-name": "taro" };
-    //   const sampleUser: User = taro;
-    //   `,
-    // },
+    {
+      code: `
+      const taro = { age: 20, name: "taro", version: 1 };
+      const sampleUser: { [key: string]: string; age: number } = taro;
+      `,
+    },
+    {
+      code: `
+      const taro = { age: 20, name: "taro", uuid: "uuid" };
+      const sampleUser: { [key in "name" | "uuid"]: string } & { age: number } = taro;
+      `,
+    },
+    {
+      code: `
+      type User = { [propertyName: \`data-\${string}\`]: string } & { name: string };
+      const taro = { "data-name": "taro", name: "taro" };
+      const sampleUser: User = taro;
+      `,
+    },
+    {
+      code: `
+      type User = { data: {[propertyName: \`data-\${string}\`]: string } & { name: string }};
+      const taro = { data: { "data-name": "taro", name: "taro" }};
+      const sampleUser: User = taro;
+      `,
+    },
   ],
   invalid: [
     {
@@ -117,5 +135,21 @@ ruleTester.run("no-excess-property", rule, {
       `,
       errors,
     },
+    {
+      code: `
+      const taro = { age: 20, name: "taro", uuid: "uuid", version: 1 };
+      const sampleUser: { [key in "name" | "uuid"]: string } & { age: number } = taro;
+      `,
+      errors,
+    },
+    // todo: fix this
+    // {
+    //   code: `
+    //   type User = { [propertyName: \`data-\${string}\`]: string } & { name: string };
+    //   const taro = { "data-name": "taro", name: "taro", age: 20 };
+    //   const sampleUser: User = taro;
+    //   `,
+    //   errors
+    // },
   ],
 });
