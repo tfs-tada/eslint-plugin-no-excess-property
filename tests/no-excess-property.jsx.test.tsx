@@ -101,6 +101,14 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
+      function Components(props: { name: string }) {
+        return <div>{props.name}</div>;
+      }
+      const app = <Components name="taro" key={1} />;
+      `,
+    },
+    {
+      code: `
       type Props = {[K in \`data-\${string}\`]: string } & { age: number }
       const Component = (props: Props) => {
         return <div>{}</div>;
