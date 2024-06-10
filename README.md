@@ -103,12 +103,19 @@ const func3: Func = (user) => {
 ## Setting
 
 ```json
-"rules": {
-  "no-excess-property/no-excess-property": [
-    "error",
-    { "skipWords": ["UserElement"], "skipProperties": ["age"], "checkJsx": true, "checkClass": false }
-  ]
-},
+{
+  "rules": {
+    "no-excess-property/no-excess-property": [
+      "error",
+      {
+        "skipWords": ["UserElement"],
+        "skipProperties": ["data-testid"],
+        "checkJsx": true,
+        "checkClass": false
+      }
+    ]
+  }
+}
 ```
 
 ### skipWords
@@ -122,14 +129,16 @@ const taro = { name: "Taro", age: 20 };
 const element: UserElement = taro; // OK
 ```
 
+default is `["Element", "HTMLElement", "ReactNode", "ReactElement", "FC"]`.
+
 ### skipProperties
 
 Properties registered in `skipProperties` are not inspected.
 
 ```ts
-// "skipProperties": ["age"]
+// "skipProperties": ["data-testid"]
 type User = { name: string };
-const taro = { name: "Taro", age: 20 };
+const taro = { name: "Taro", "data-testid": "000-000-000" };
 const user: User = taro; // OK
 ```
 
