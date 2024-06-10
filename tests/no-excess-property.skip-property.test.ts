@@ -31,8 +31,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["User"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["age"],
           checkJsx: false,
           checkClass: false,
         },
@@ -47,8 +47,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["User"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["age"],
           checkJsx: false,
           checkClass: false,
         },
@@ -62,8 +62,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["Blob"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name", "webkitRelativePath"],
           checkJsx: false,
           checkClass: false,
         },
@@ -75,8 +75,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["Blob"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name", "webkitRelativePath"],
           checkJsx: false,
           checkClass: false,
         },
@@ -90,8 +90,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["Blob"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name", "webkitRelativePath"],
           checkJsx: false,
           checkClass: false,
         },
@@ -107,8 +107,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["User"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["age"],
           checkJsx: false,
           checkClass: false,
         },
@@ -124,8 +124,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["user"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["name"],
           checkJsx: false,
           checkClass: false,
         },
@@ -141,8 +141,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["HogeType"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["name"],
           checkJsx: false,
           checkClass: false,
         },
@@ -157,8 +157,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["File"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name"],
           checkJsx: false,
           checkClass: false,
         },
@@ -171,8 +171,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["File"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name"],
           checkJsx: false,
           checkClass: false,
         },
@@ -187,8 +187,8 @@ ruleTester.run("no-excess-property", rule, {
       `,
       options: [
         {
-          skipWords: ["File"],
-          skipProperties: [],
+          skipWords: [],
+          skipProperties: ["lastModified", "name"],
           checkJsx: false,
           checkClass: false,
         },

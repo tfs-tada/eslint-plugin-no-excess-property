@@ -22,6 +22,7 @@ Add the following to your ESLint configuration file (such as .eslintrc):
       "error",
       {
         "skipWords": ["UncheckedTypeName"],
+        "skipProperties": ["uncheckedPropertyName"],
         "checkJsx": true,
         "checkClass": false
       }
@@ -105,7 +106,7 @@ const func3: Func = (user) => {
 "rules": {
   "no-excess-property/no-excess-property": [
     "error",
-    { "skipWords": ["UserElement"], "checkJsx": true, "checkClass": false }
+    { "skipWords": ["UserElement"], "skipProperties": ["age"], "checkJsx": true, "checkClass": false }
   ]
 },
 ```
@@ -115,10 +116,24 @@ const func3: Func = (user) => {
 Types registered in `skipWords` are not inspected.
 
 ```ts
+// "skipWords": ["UserElement"]
 type UserElement = { name: string };
 const taro = { name: "Taro", age: 20 };
 const element: UserElement = taro; // OK
 ```
+
+### skipProperties
+
+Properties registered in `skipProperties` are not inspected.
+
+```ts
+// "skipProperties": ["age"]
+type User = { name: string };
+const taro = { name: "Taro", age: 20 };
+const user: User = taro; // OK
+```
+
+default is `[]`.
 
 ### checkJsx
 

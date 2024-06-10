@@ -101,16 +101,6 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      const Components = (props: { data: { name: string } }) => {
-        return <div>{props.data.name}</div>;
-      };
-      const user = { name: "taro", age: 10 };
-      const app = <Components data={user} />;
-      `,
-      options: [{ skipWords: [], checkJsx: false, checkClass: false }],
-    },
-    {
-      code: `
       type Props = {[K in \`data-\${string}\`]: string } & { age: number }
       const Component = (props: Props) => {
         return <div>{}</div>;
@@ -147,7 +137,14 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components {...user} />;
       `,
-      options: [{ skipWords: [], checkJsx: false, checkClass: false }],
+      options: [
+        {
+          skipWords: [],
+          skipProperties: [],
+          checkJsx: false,
+          checkClass: false,
+        },
+      ],
     },
     {
       code: `
@@ -158,7 +155,14 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components user={user} />;      
       `,
-      options: [{ skipWords: ["UserProps"], checkJsx: true, checkClass: false }],
+      options: [
+        {
+          skipWords: ["UserProps"],
+          skipProperties: [],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
     },
     {
       code: `
@@ -169,7 +173,14 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components user={user} />;      
       `,
-      options: [{ skipWords: ["UserProps"], checkJsx: true, checkClass: false }],
+      options: [
+        {
+          skipWords: ["UserProps"],
+          skipProperties: [],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
     },
     {
       code: `
@@ -181,7 +192,49 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components user={user} />;      
       `,
-      options: [{ skipWords: ["User"], checkJsx: true, checkClass: false }],
+      options: [
+        {
+          skipWords: ["User"],
+          skipProperties: [],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
+    },
+    {
+      code: `
+      const Components = (props: { name: string }) => {
+        return <div>{props.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components {...user} />;
+      `,
+      options: [
+        {
+          skipWords: [],
+          skipProperties: ["age"],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
+    },
+    {
+      code: `
+      type UserProps = { user: { name: string } }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      const user = { name: "taro" };
+      const app = <Components user={user} data-test="test" />;      
+      `,
+      options: [
+        {
+          skipWords: [],
+          skipProperties: ["data-test"],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
     },
   ],
   invalid: [
@@ -245,8 +298,33 @@ ruleTester.run("no-excess-property", rule, {
       const user = { name: "taro", age: 10 };
       const app = <Components user={user} />;      
       `,
-      options: [{ skipWords: ["Props"], checkJsx: true, checkClass: false }],
-      errors
+      options: [
+        {
+          skipWords: ["Props"],
+          skipProperties: [],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
+      errors,
+    },
+    {
+      code: `
+      const Components = (props: { name: string }) => {
+        return <div>{props.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components {...user} />;
+      `,
+      errors,
+      options: [
+        {
+          skipWords: [],
+          skipProperties: ["name"],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
     },
     // todo: fix this
     // {

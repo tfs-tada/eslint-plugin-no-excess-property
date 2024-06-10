@@ -11,6 +11,7 @@ export class TypeUtil {
     private checker: Checker,
     private parserServices: Partial<ParserServices>,
     private skipWords: string[],
+    private skipProperties: string[],
     private checkClass: boolean,
   ) {}
 
@@ -218,6 +219,7 @@ export class TypeUtil {
 
     const idProps = idType.getProperties();
     const initProps = initType.getProperties().filter((prop) => {
+      if(this.skipProperties.includes(prop.name)) return false;
       if (!!prop.valueDeclaration) {
         if (
           ts.getCombinedModifierFlags(prop.valueDeclaration) ===
