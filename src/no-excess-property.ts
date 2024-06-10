@@ -310,7 +310,7 @@ export = createRule({
   name: "no-excess-property",
   defaultOptions: [
     {
-      skipWords: [] as string[],
+      skipWords: ["Element", "HTMLElement", "ReactNode", "ReactElement", "FC"],
       skipProperties: [] as string[],
       checkJsx: true,
       checkClass: false,

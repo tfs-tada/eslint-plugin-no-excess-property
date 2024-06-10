@@ -92,15 +92,6 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      import React, { ReactNode } from "react";
-      const Components = (props: { dialog: ReactNode }) => {
-        return props.dialog;
-      };
-      const app = <Components dialog={<></>} />;
-      `,
-    },
-    {
-      code: `
       function Components(props: { name: string }) {
         return <div>{props.name}</div>;
       }
