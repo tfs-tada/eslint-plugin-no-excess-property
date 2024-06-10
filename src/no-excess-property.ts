@@ -13,12 +13,14 @@ export = createRule({
 
     if (!checker || !parserServices) return {};
     const skipWords = context.options[0]?.skipWords ?? [];
+    const skipProperties = context.options[0]?.skipProperties ?? [];
     const checkJsx = context.options[0]?.checkJsx ?? true;
     const checkClass = context.options[0]?.checkClass ?? false;
     const typeUtil = new TypeUtil(
       checker,
       parserServices,
       skipWords,
+      skipProperties,
       checkClass,
     );
 
@@ -130,6 +132,7 @@ export = createRule({
 
               const checkResult = Object.entries(allProps).map(
                 ([key, initType]) => {
+                  if (skipProperties.includes(key)) return false;
                   const idNode = idTypeProperties.find((e) => e.name === key);
                   if (!idNode) return { property: key, objectName: "" };
                   const idType = checker.getTypeOfSymbolAtLocation(
@@ -285,6 +288,13 @@ export = createRule({
             },
             uniqueItems: true,
           },
+          skipProperties: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+            uniqueItems: true,
+          },
           checkJsx: {
             type: "boolean",
           },
@@ -298,6 +308,11 @@ export = createRule({
   },
   name: "no-excess-property",
   defaultOptions: [
-    { skipWords: [] as string[], checkJsx: true, checkClass: false },
+    {
+      skipWords: [] as string[],
+      skipProperties: [] as string[],
+      checkJsx: true,
+      checkClass: false,
+    },
   ],
 });

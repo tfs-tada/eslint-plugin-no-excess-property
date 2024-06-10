@@ -63,7 +63,14 @@ ruleTester.run("no-excess-property", rule, {
       }
       const fuga: Fuga = new Hoge();
       `,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
     {
       code: `
@@ -76,7 +83,14 @@ ruleTester.run("no-excess-property", rule, {
       }
       const fuga: Fuga = new Hoge();
       `,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
   ],
   invalid: [
@@ -91,7 +105,14 @@ ruleTester.run("no-excess-property", rule, {
       const fuga: Fuga = new Hoge();
       `,
       errors,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
     {
       code: `
@@ -104,7 +125,14 @@ ruleTester.run("no-excess-property", rule, {
       func(hoge);
       `,
       errors,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
     {
       code: `
@@ -120,7 +148,14 @@ ruleTester.run("no-excess-property", rule, {
       func(buhi);
       `,
       errors,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
     {
       code: `
@@ -134,7 +169,14 @@ ruleTester.run("no-excess-property", rule, {
       const fuga: Fuga = new Hoge();
       `,
       errors,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
     {
       code: `
@@ -148,7 +190,14 @@ ruleTester.run("no-excess-property", rule, {
       const fuga: Fuga = new Hoge();
       `,
       errors,
-      options: [{ checkClass: true, checkJsx: false, skipWords: [] }],
+      options: [
+        {
+          checkClass: true,
+          checkJsx: false,
+          skipWords: [],
+          skipProperties: [],
+        },
+      ],
     },
   ],
 });
