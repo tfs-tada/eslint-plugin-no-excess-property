@@ -132,7 +132,8 @@ export = createRule({
 
               const checkResult = Object.entries(allProps).map(
                 ([key, initType]) => {
-                  if (skipProperties.includes(key)) return false;
+                  if (skipProperties.includes(key) || key === "key")
+                    return false;
                   const idNode = idTypeProperties.find((e) => e.name === key);
                   if (!idNode) return { property: key, objectName: "" };
                   const idType = checker.getTypeOfSymbolAtLocation(
