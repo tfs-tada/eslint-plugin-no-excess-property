@@ -72,10 +72,10 @@ export class TypeUtil {
 
     // skipword
     const idRawTypeName = idRawType.aliasSymbol?.name ?? idRawType.symbol?.name;
-    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name ?? false;
+    const idTypeName = idType.aliasSymbol?.name ?? idType.symbol?.name;
     if (
-      (idTypeName && this.skipWords.includes(idTypeName)) ||
-      (idRawTypeName && this.skipWords.includes(idRawTypeName))
+      (!!idTypeName && this.skipWords.includes(idTypeName)) ||
+      (!!idRawTypeName && this.skipWords.includes(idRawTypeName))
     ) {
       return false;
     }

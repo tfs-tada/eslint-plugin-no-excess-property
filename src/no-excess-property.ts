@@ -98,6 +98,12 @@ export = createRule({
           .map((sigType) => {
             if (sigType.parameters.length === 0) return "skip";
             const idTypeParent = sigType.getTypeParameterAtPosition(0);
+
+            // skipword
+            const idTypeName =
+              idTypeParent.aliasSymbol?.name ?? idTypeParent.symbol?.name;
+            if (idTypeName && skipWords.includes(idTypeName)) return false;
+
             const propertiesList = idTypeParent.isUnion()
               ? idTypeParent.types
               : [idTypeParent];

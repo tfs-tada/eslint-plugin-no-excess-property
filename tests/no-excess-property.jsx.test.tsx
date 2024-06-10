@@ -139,6 +139,50 @@ ruleTester.run("no-excess-property", rule, {
       const a = <Component data={user.data} />;
       `,
     },
+    {
+      code: `
+      const Components = (props: { name: string }) => {
+        return <div>{props.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components {...user} />;
+      `,
+      options: [{ skipWords: [], checkJsx: false, checkClass: false }],
+    },
+    {
+      code: `
+      type UserProps = { user: { name: string } }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components user={user} />;      
+      `,
+      options: [{ skipWords: ["UserProps"], checkJsx: true, checkClass: false }],
+    },
+    {
+      code: `
+      interface UserProps { user: { name: string } }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components user={user} />;      
+      `,
+      options: [{ skipWords: ["UserProps"], checkJsx: true, checkClass: false }],
+    },
+    {
+      code: `
+      type User = { name: string };
+      type UserProps = { user: User }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components user={user} />;      
+      `,
+      options: [{ skipWords: ["User"], checkJsx: true, checkClass: false }],
+    },
   ],
   invalid: [
     {
@@ -191,6 +235,18 @@ ruleTester.run("no-excess-property", rule, {
       <Component {...user} />;
       `,
       errors,
+    },
+    {
+      code: `
+      type UserProps = { user: { name: string } }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      const user = { name: "taro", age: 10 };
+      const app = <Components user={user} />;      
+      `,
+      options: [{ skipWords: ["Props"], checkJsx: true, checkClass: false }],
+      errors
     },
     // todo: fix this
     // {
