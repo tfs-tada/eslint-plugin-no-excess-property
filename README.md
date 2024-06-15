@@ -23,12 +23,14 @@ Open the file `src/App.tsx` to see the effect !
 ## Installation
 
 ```sh
-npm install eslint eslint-plugin-no-excess-property --save-dev
+npm install eslint-plugin-no-excess-property --save-dev
 ```
 
 ## Usage
 
-Add the following to your ESLint configuration file (such as .eslintrc):
+Add the following to your ESLint configuration file
+
+### eslintrc.json
 
 ```json
 {
@@ -51,6 +53,10 @@ Add the following to your ESLint configuration file (such as .eslintrc):
   }
 }
 ```
+
+### flat config
+
+Please refer to the [sample repository](https://github.com/tfs-tada/no-excess-property-sample/blob/master/packages/react-vite-flatconfig/eslint.config.js) configuration.
 
 ## Example
 
