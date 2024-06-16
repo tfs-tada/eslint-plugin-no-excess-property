@@ -6,6 +6,44 @@ export type Checker = ts.TypeChecker & {
   getPromisedTypeOfPromise: (type: ts.Type) => ts.Type | undefined;
 };
 
+const LITERAL_TYPE_FLAG =
+  ts.TypeFlags.String |
+  ts.TypeFlags.Number |
+  ts.TypeFlags.Boolean |
+  ts.TypeFlags.Enum |
+  ts.TypeFlags.BigInt |
+  ts.TypeFlags.StringLiteral |
+  ts.TypeFlags.NumberLiteral |
+  ts.TypeFlags.BooleanLiteral |
+  ts.TypeFlags.EnumLiteral |
+  ts.TypeFlags.BigIntLiteral;
+
+const ID_ALLOW_TYPE_FLAG =
+  ts.TypeFlags.Any |
+  ts.TypeFlags.Unknown |
+  ts.TypeFlags.NonPrimitive |
+  ts.TypeFlags.TypeParameter;
+
+const INIT_ALLOW_TYPE_FLAG =
+  LITERAL_TYPE_FLAG |
+  ts.TypeFlags.Void |
+  ts.TypeFlags.Any |
+  ts.TypeFlags.Unknown |
+  ts.TypeFlags.Null |
+  ts.TypeFlags.Undefined |
+  ts.TypeFlags.Never;
+
+const ID_SKIP_FLAG =
+  LITERAL_TYPE_FLAG |
+  ts.TypeFlags.Void |
+  ts.TypeFlags.Enum |
+  ts.TypeFlags.EnumLiteral |
+  ts.TypeFlags.Void |
+  ts.TypeFlags.Null |
+  ts.TypeFlags.Never |
+  ts.TypeFlags.Undefined |
+  ts.TypeFlags.VoidLike;
+
 export class TypeUtil {
   constructor(
     private checker: Checker,
@@ -101,37 +139,12 @@ export class TypeUtil {
     }
 
     if (
-      [
-        ts.TypeFlags.Any,
-        ts.TypeFlags.Unknown,
-        ts.TypeFlags.NonPrimitive,
-        ts.TypeFlags.TypeParameter,
-      ].includes(idType.flags) ||
-      [
-        ts.TypeFlags.Void,
-        ts.TypeFlags.Any,
-        ts.TypeFlags.Unknown,
-        ts.TypeFlags.Null,
-        ts.TypeFlags.Undefined,
-        ts.TypeFlags.Never,
-      ].includes(initType.flags) ||
-      initType.flags <= 2048
+      !!(idType.flags & ID_ALLOW_TYPE_FLAG) ||
+      !!(initType.flags & INIT_ALLOW_TYPE_FLAG)
     ) {
       return false;
     }
-    if (
-      [
-        ts.TypeFlags.Void,
-        ts.TypeFlags.Enum,
-        ts.TypeFlags.EnumLiteral,
-        ts.TypeFlags.Void,
-        ts.TypeFlags.Null,
-        ts.TypeFlags.Never,
-        ts.TypeFlags.Undefined,
-        ts.TypeFlags.VoidLike,
-      ].includes(idType.flags) ||
-      idType.flags <= 2048
-    ) {
+    if (!!(idType.flags & ID_SKIP_FLAG)) {
       return "skip";
     }
 
@@ -219,7 +232,7 @@ export class TypeUtil {
 
     const idProps = idType.getProperties();
     const initProps = initType.getProperties().filter((prop) => {
-      if(this.skipProperties.includes(prop.name)) return false;
+      if (this.skipProperties.includes(prop.name)) return false;
       if (!!prop.valueDeclaration) {
         if (
           ts.getCombinedModifierFlags(prop.valueDeclaration) ===

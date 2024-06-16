@@ -68,6 +68,42 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
+      // union * union: string -> obj, string -> obj
+      type User = string | { name: string };
+      const taro = { name: "taro" } as string | { name: string, tel: string };
+      const user: User = taro;
+      `,
+      errors,
+    },
+    {
+      code: `
+      // union * union: string -> obj, obj -> string
+      type User = string | { name: string };
+      const taro = { name: "taro" } as { name: string, tel: string } | string;
+      const user: User = taro;
+      `,
+      errors,
+    },
+    {
+      code: `
+      // union * union: obj -> string, string -> obj
+      type User = { name: string } | string;
+      const taro = { name: "taro" } as string | { name: string, tel: string };
+      const user: User = taro;
+      `,
+      errors,
+    },
+    {
+      code: `
+      // union * union: obj -> string, obj -> string
+      type User = { name: string } | string;
+      const taro = { name: "taro" } as { name: string, tel: string } | string;
+      const user: User = taro;
+      `,
+      errors,
+    },
+    {
+      code: `
       type TypeA = { name: string, tel?: string };
       type TypeB = { name: string, age: number };
       type TypeC = { name: string };
