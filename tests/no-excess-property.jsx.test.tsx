@@ -100,31 +100,31 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type Props = {[K in \`data-\${string}\`]: string } & { age: number }
+      type Props = {[K in \`hoge-\${string}\`]: string } & { age: number }
       const Component = (props: Props) => {
         return <div>{}</div>;
       }
-      const user = { "data-testid": "file", age: 10 };
+      const user = { "hoge-testid": "file", age: 10 };
       const a = <Component {...user} />;
       `,
     },
     {
       code: `
-      type Props = { data: {[K in \`data-\${string}\`]: string }} & { age: number }
+      type Props = { data: {[K in \`hoge-\${string}\`]: string }} & { age: number }
       const Component = (props: Props) => {
         return <div>{}</div>;
       }
-      const user = { data: {"data-testid": "file"}, age: 10 };
+      const user = { data: {"hoge-testid": "file"}, age: 10 };
       const a = <Component data={user.data} age={user.age} />;
       `,
     },
     {
       code: `
-      type Props = { data: {[K in \`data-\${string}\`]: string } & { age: number }}
+      type Props = { data: {[K in \`hoge-\${string}\`]: string } & { age: number }}
       const Component = (props: Props) => {
         return <div>{}</div>;
       }
-      const user = { data: {"data-testid": "file", age: 10 }};
+      const user = { data: {"hoge-testid": "file", age: 10 }};
       const a = <Component data={user.data} />;
       `,
     },
@@ -229,7 +229,7 @@ ruleTester.run("no-excess-property", rule, {
       options: [
         {
           skipWords: [],
-          skipProperties: ["data-test"],
+          skipProperties: [],
           checkJsx: true,
           checkClass: false,
         },
@@ -325,14 +325,34 @@ ruleTester.run("no-excess-property", rule, {
         },
       ],
     },
+    {
+      code: `
+      type UserProps = { user: { name: string } }
+      const Components = (props: UserProps) => {
+        return <div>{props.user.name}</div>;
+      };
+      // typo: data-test -> date-test
+      const user = { name: "taro", "date-test": "test-id" };
+      const app = <Components {...user} />;      
+      `,
+      options: [
+        {
+          skipWords: [],
+          skipProperties: [],
+          checkJsx: true,
+          checkClass: false,
+        },
+      ],
+      errors
+    },
     // todo: fix this
     // {
     //   code: `
-    //   type Props = {[K in \`data-\${string}\`]: string } & { age: number }
+    //   type Props = {[K in \`hoge-\${string}\`]: string } & { age: number }
     //   const Component = (props: Props) => {
     //     return <div>{}</div>;
     //   }
-    //   const user = { "data-testid": "file", age: 10, tel: "000-0000-0000" };
+    //   const user = { "hoge-testid": "file", age: 10, tel: "000-0000-0000" };
     //   const a = <Component {...user} />;
     //   `,
     //   errors,

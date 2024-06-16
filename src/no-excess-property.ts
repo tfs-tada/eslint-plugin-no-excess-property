@@ -73,28 +73,7 @@ export = createRule({
           tagNameNode,
         );
         const jsxSignatures = componentType.getCallSignatures();
-        const allProps: Record<string, ts.Type> = {};
-        node.attributes.forEach((attribute) => {
-          if (attribute.type === "JSXSpreadAttribute") {
-            const attrNode = parserServices.esTreeNodeToTSNodeMap!.get(
-              attribute.argument,
-            );
-            const attrType = checker.getTypeAtLocation(attrNode);
-            attrType.getProperties().forEach((prop) => {
-              allProps[prop.name] = checker.getTypeOfSymbolAtLocation(
-                prop,
-                attrNode,
-              );
-            });
-          } else if (attribute.type === "JSXAttribute") {
-            const attrName = attribute.name.name;
-            if (typeof attrName !== "string") return;
-            const attrNode =
-              parserServices.esTreeNodeToTSNodeMap!.get(attribute);
-            const attrType = checker.getTypeAtLocation(attrNode);
-            allProps[attrName] = attrType;
-          }
-        });
+        const allProps = typeUtil.createJsxAttributeRecord(node.attributes);
 
         const result = jsxSignatures
           .map((sigType) => {
@@ -132,7 +111,11 @@ export = createRule({
 
               const checkResult = Object.entries(allProps).map(
                 ([key, initType]) => {
-                  if (skipProperties.includes(key) || key === "key")
+                  if (
+                    skipProperties.includes(key) ||
+                    key === "key" ||
+                    key.startsWith("data-")
+                  )
                     return false;
                   const idNode = idTypeProperties.find((e) => e.name === key);
                   if (!idNode) return { property: key, objectName: "" };
