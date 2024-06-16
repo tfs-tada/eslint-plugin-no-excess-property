@@ -79,15 +79,15 @@ ruleTester.run("no-excess-property", rule, {
     },
     {
       code: `
-      type User = { [propertyName: \`data-\${string}\`]: string } & { name: string };
-      const taro = { "data-name": "taro", name: "taro" };
+      type User = { [propertyName: \`hoge-\${string}\`]: string } & { name: string };
+      const taro = { "hoge-name": "taro", name: "taro" };
       const sampleUser: User = taro;
       `,
     },
     {
       code: `
-      type User = { data: {[propertyName: \`data-\${string}\`]: string } & { name: string }};
-      const taro = { data: { "data-name": "taro", name: "taro" }};
+      type User = { data: {[propertyName: \`hoge-\${string}\`]: string } & { name: string }};
+      const taro = { data: { "hoge-name": "taro", name: "taro" }};
       const sampleUser: User = taro;
       `,
     },
@@ -145,8 +145,8 @@ ruleTester.run("no-excess-property", rule, {
     // todo: fix this
     // {
     //   code: `
-    //   type User = { [propertyName: \`data-\${string}\`]: string } & { name: string };
-    //   const taro = { "data-name": "taro", name: "taro", age: 20 };
+    //   type User = { [propertyName: \`hoge-\${string}\`]: string } & { name: string };
+    //   const taro = { "hoge-name": "taro", name: "taro", age: 20 };
     //   const sampleUser: User = taro;
     //   `,
     //   errors

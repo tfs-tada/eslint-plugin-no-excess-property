@@ -86,6 +86,34 @@ export class TypeUtil {
     return [];
   };
 
+  createJsxAttributeRecord = (
+    attributes: (TSESTree.JSXAttribute | TSESTree.JSXSpreadAttribute)[],
+  ): Record<string, ts.Type> => {
+    const allProps: Record<string, ts.Type> = {};
+    attributes.forEach((attribute) => {
+      if (attribute.type === "JSXSpreadAttribute") {
+        const attrNode = this.parserServices.esTreeNodeToTSNodeMap!.get(
+          attribute.argument,
+        );
+        const attrType = this.checker.getTypeAtLocation(attrNode);
+        attrType.getProperties().forEach((prop) => {
+          allProps[prop.name] = this.checker.getTypeOfSymbolAtLocation(
+            prop,
+            attrNode,
+          );
+        });
+      } else if (attribute.type === "JSXAttribute") {
+        const attrName = attribute.name.name;
+        if (typeof attrName !== "string") return;
+        const attrNode =
+          this.parserServices.esTreeNodeToTSNodeMap!.get(attribute);
+        const attrType = this.checker.getTypeAtLocation(attrNode);
+        allProps[attrName] = attrType;
+      }
+    });
+    return allProps;
+  };
+
   getReturnTypes = (
     node: TSESTree.VariableDeclarator | TSESTree.FunctionDeclaration,
   ): ts.Type[] => {

@@ -117,7 +117,7 @@ const func2: Func = (user) => {
       "error",
       {
         "skipWords": ["UserElement"],
-        "skipProperties": ["data-testid"],
+        "skipProperties": ["skipProperty"],
         "checkJsx": true,
         "checkClass": false
       }
@@ -144,9 +144,9 @@ default is `["Element", "HTMLElement", "ReactNode", "ReactElement", "FC"]`.
 Properties registered in `skipProperties` are not inspected.
 
 ```ts
-// "skipProperties": ["data-testid"]
+// "skipProperties": ["skipProperty"]
 type User = { name: string };
-const taro = { name: "Taro", "data-testid": "000-000-000" };
+const taro = { name: "Taro", "skipProperty": "000-000-000" };
 const user: User = taro; // OK
 ```
 
