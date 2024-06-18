@@ -60,6 +60,8 @@ Please refer to the [sample repository](https://github.com/tfs-tada/no-excess-pr
 
 ## Example
 
+Check [here](https://github.com/tfs-tada/eslint-plugin-no-excess-property/tree/master/docs/rules/no-excess-property.md) for more information.
+
 ### Object
 
 ```typescript
@@ -146,7 +148,7 @@ Properties registered in `skipProperties` are not inspected.
 ```ts
 // "skipProperties": ["skipProperty"]
 type User = { name: string };
-const taro = { name: "Taro", "skipProperty": "000-000-000" };
+const taro = { name: "Taro", skipProperty: "000-000-000" };
 const user: User = taro; // OK
 ```
 
