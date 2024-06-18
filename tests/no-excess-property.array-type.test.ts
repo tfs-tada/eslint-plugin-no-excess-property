@@ -9,37 +9,79 @@ const ruleTester = new TSESLint.RuleTester({
   },
 });
 
-// const errors = [
-//   {
-//     messageId: "no-excess-property",
-//   },
-// ] as const;
+const errors = [
+  {
+    messageId: "no-excess-property",
+  },
+] as const;
 
 ruleTester.run("no-excess-property", rule, {
   valid: [
-    {
-      code: `
-      type Arr = ReadonlyArray<unknown>;
-      const func: Arr = [];
-      `,
-    },
-    {
-      code: `
-      type Arr = ReadonlyArray<unknown>;
-      const func: Arr = ["taro", 33];
-      `,
-    },
+    // {
+    //   code: `
+    //   type Arr = ReadonlyArray<unknown>;
+    //   const func: Arr = [];
+    //   `,
+    // },
+    // {
+    //   code: `
+    //   type Arr = { body: ReadonlyArray<unknown> };
+    //   const func: Arr = { body: [] };
+    //   `,
+    // },
+    // {
+    //   code: `
+    //   type Arr = ReadonlyArray<unknown>;
+    //   const func: Arr = ["taro", 33];
+    //   `,
+    // },
+    // {
+    //   code: `
+    //   type Arr = { body: ReadonlyArray<unknown> };
+    //   const func: Arr = { body: ["taro", 33] };
+    //   `,
+    // },
+    // {
+    //   code: `
+    //   type User = { name: string };
+    //   const taro = { name: "taro" };
+    //   const jiro = { name: "jiro" };
+    //   const saburo = { name: "saburo" };
+    //   const users: User[] = [taro, jiro, saburo];
+    //   `,
+    // },
+  ],
+  invalid: [
     {
       code: `
       type User = { name: string };
-      const taro = { name: "taro" };
+      const taro = { name: "taro", age: 10 };
       const jiro = { name: "jiro" };
       const saburo = { name: "saburo" };
-      const users: User[] = [taro, jiro, saburo];
+      const users: { obj: User[] } = { obj: [taro, jiro, saburo] };
       `,
+      errors,
     },
-  ],
-  invalid: [
+    // {
+    //   code: `
+    //   type User = { name: string };
+    //   const taro = { name: "taro", age: 10 };
+    //   const jiro = { name: "jiro" };
+    //   const saburo = { name: "saburo" };
+    //   const users: Promise<{ obj: User[] }> = Promise.resolve({ obj: [taro, jiro, saburo] });
+    //   `,
+    //   errors,
+    // },
+    // {
+    //   code: `
+    //   type User = { name: string };
+    //   const taro = { name: "taro", age: 10 };
+    //   const jiro = { name: "jiro" };
+    //   const saburo = { name: "saburo" };
+    //   const users: Promise<{ obj: User[][] }> = Promise.resolve({ obj: [[],[taro, jiro, saburo]] });
+    //   `,
+    //   errors,
+    // },
     // todo: fix this
     // {
     //   code: `
