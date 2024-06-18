@@ -234,6 +234,16 @@ export = createRule({
           parserServices.esTreeNodeToTSNodeMap.get(node.init),
         );
 
+        // const obj = initType.getProperties()[0].valueDeclaration!
+        // if(ts.hasOnlyExpressionInitializer(obj) && !!obj.initializer){
+        //   obj.initializer.forEachChild((child) => {console.log(child);})
+        // }
+        
+
+        // initType は [taro, jiro, saburo] で形成されている
+        // それぞれの要素に対して idType との比較を行う
+        // taro と idType で比較
+
         const idType = checker.getTypeAtLocation(
           parserServices.esTreeNodeToTSNodeMap.get(node.id),
         );
@@ -248,6 +258,37 @@ export = createRule({
             },
           });
         }
+
+        // const initNode = parserServices.esTreeNodeToTSNodeMap.get(node.init);
+
+        // const initTypes = ts.isArrayLiteralExpression(initNode)
+        //   ? initNode.elements.map(
+        //       (e) => [e, checker.getTypeAtLocation(e)] as const,
+        //     )
+        //   : ([[node, checker.getTypeAtLocation(initNode)]] as const);
+
+        // const idType = checker.getElementTypeOfArrayType(
+        //   checker.getTypeAtLocation(
+        //     parserServices.esTreeNodeToTSNodeMap.get(node.id),
+        //   ),
+        // );
+
+        // console.log(initTypes.map((e) => e[1]));
+
+        // initTypes
+        //   .map((e) => [e[0], typeUtil.checkProperties(e[1], idType!)] as const)
+        //   .forEach((e) => {
+        //     console.log(e[1]);
+        //     if (typeof e[1] === "object") {
+        //       context.report({
+        //         node,
+        //         messageId: "no-excess-property",
+        //         data: {
+        //           excessProperty: e[1].property,
+        //         },
+        //       });
+        //     }
+        //   });
       },
     };
   },
