@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-no-excess-property",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "ESLint rule for not using excess-property",
   "keywords": [
     "eslint",
