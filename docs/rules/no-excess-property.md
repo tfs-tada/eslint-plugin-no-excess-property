@@ -124,6 +124,14 @@ const userOk: User = alice; // OK
 const userError: User = bob; // Error: Object has property not present "time" in type
 ```
 
+- Object
+
+```ts
+type User = Object;
+const alice = { name: "Alice" };
+const user: User = alice; // OK
+```
+
 ### function
 
 - Function Variables

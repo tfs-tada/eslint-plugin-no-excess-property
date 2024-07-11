@@ -271,20 +271,8 @@ export class TypeUtil {
       }
       return true;
     });
-    const filterdIdProps = idProps.filter(
-      (t) =>
-        ![
-          "constructor",
-          "toString",
-          "toLocaleString",
-          "valueOf",
-          "hasOwnProperty",
-          "isPrototypeOf",
-          "propertyIsEnumerable",
-        ].includes(t.name),
-    );
-
-    if (filterdIdProps.length === 0) return false;
+    if (idType.symbol?.name === "Object") return false;
+    if (idProps.length === 0) return false;
 
     const idPropsNames = idProps.map((prop) => prop.name);
     for (const initProp of initProps) {
