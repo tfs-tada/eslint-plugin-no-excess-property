@@ -16,12 +16,14 @@ export = createRule({
     const skipProperties = context.options[0]?.skipProperties ?? [];
     const checkJsx = context.options[0]?.checkJsx ?? true;
     const checkClass = context.options[0]?.checkClass ?? false;
+    const targetProperties = context.options[0]?.targetProperties ?? [];
     const typeUtil = new TypeUtil(
       checker,
       parserServices,
       skipWords,
       skipProperties,
       checkClass,
+      targetProperties,
     );
 
     const checkReturnStatement = (
@@ -118,7 +120,12 @@ export = createRule({
                   )
                     return false;
                   const idNode = idTypeProperties.find((e) => e.name === key);
-                  if (!idNode) return { property: key, objectName: "" };
+                  if (!idNode) {
+                    if (targetProperties.length === 0 || targetProperties.includes(key)) {
+                      return { property: key, objectName: "" };
+                    }
+                    return "skip";
+                  }
                   const idType = checker.getTypeOfSymbolAtLocation(
                     idNode,
                     tsNode,
@@ -279,6 +286,13 @@ export = createRule({
             },
             uniqueItems: true,
           },
+          targetProperties: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+            uniqueItems: true,
+          },
           checkJsx: {
             type: "boolean",
           },
@@ -295,6 +309,7 @@ export = createRule({
     {
       skipWords: ["Element", "HTMLElement", "ReactNode", "ReactElement", "FC"],
       skipProperties: [] as string[],
+      targetProperties: [] as string[],
       checkJsx: true,
       checkClass: false,
     },

@@ -51,7 +51,12 @@ export class TypeUtil {
     private skipWords: string[],
     private skipProperties: string[],
     private checkClass: boolean,
+    private targetProperties: string[],
   ) {}
+
+  private checkTarget = (propertyName: string) =>
+    this.targetProperties.length === 0 ||
+    this.targetProperties.includes(propertyName);
 
   findReturnStatements = (
     node: TSESTree.Statement,
@@ -277,10 +282,12 @@ export class TypeUtil {
     const idPropsNames = idProps.map((prop) => prop.name);
     for (const initProp of initProps) {
       if (!idPropsNames.includes(initProp.name)) {
-        return {
-          objectName: "",
-          property: initProp.name,
-        };
+        if (this.checkTarget(initProp.name)) {
+          return {
+            objectName: "",
+            property: initProp.name,
+          };
+        }
       }
     }
 
