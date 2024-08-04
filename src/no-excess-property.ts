@@ -37,7 +37,7 @@ export = createRule({
         if (
           returnTypes.every(
             (type) =>
-              typeof typeUtil.checkProperties(returnStatementNode, type) ===
+              typeof typeUtil.checkProperties(returnStatementNode, type, "") ===
               "object",
           )
         ) {
@@ -123,7 +123,7 @@ export = createRule({
                     idNode,
                     tsNode,
                   );
-                  return typeUtil.checkProperties(initType, idType);
+                  return typeUtil.checkProperties(initType, idType, key);
                 },
               );
               return checkResult.some((e) => typeof e === "object")
@@ -166,7 +166,7 @@ export = createRule({
           const result = tsSignatures
             .map((sigType) => {
               const tsType = sigType.getTypeParameterAtPosition(idx);
-              return typeUtil.checkProperties(argType, tsType);
+              return typeUtil.checkProperties(argType, tsType, "");
             })
             .filter((e) => e !== "skip");
 
@@ -210,8 +210,11 @@ export = createRule({
             if (
               returnTypes.every(
                 (type) =>
-                  typeof typeUtil.checkProperties(returnStatementNode, type) ===
-                  "object",
+                  typeof typeUtil.checkProperties(
+                    returnStatementNode,
+                    type,
+                    "",
+                  ) === "object",
               )
             ) {
               context.report({
@@ -238,7 +241,11 @@ export = createRule({
           parserServices.esTreeNodeToTSNodeMap.get(node.id),
         );
 
-        const excessPropertyData = typeUtil.checkProperties(initType, idType);
+        const excessPropertyData = typeUtil.checkProperties(
+          initType,
+          idType,
+          "",
+        );
         if (typeof excessPropertyData === "object") {
           context.report({
             node,

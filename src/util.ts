@@ -131,6 +131,7 @@ export class TypeUtil {
   checkProperties = (
     initRawType: ts.Type,
     idRawType: ts.Type,
+    messagePrefix: string,
   ): false | "skip" | { property: string; objectName: string } => {
     const initType =
       this.checker.getPromisedTypeOfPromise(initRawType) ?? initRawType;
@@ -150,7 +151,7 @@ export class TypeUtil {
     // Check if initType is a Union
     if (initType.isUnion()) {
       const result = initType.types.map((type) =>
-        this.checkProperties(type, idType),
+        this.checkProperties(type, idType, messagePrefix),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       return returnObjectFlag ?? false;
@@ -159,7 +160,7 @@ export class TypeUtil {
     // Check if idType is a Union
     if (idType.isUnion()) {
       const result = idType.types.map((type) =>
-        this.checkProperties(initType, type),
+        this.checkProperties(initType, type, messagePrefix),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       const returnFalseFlag = result.find((res) => res === false);
@@ -194,7 +195,7 @@ export class TypeUtil {
       ].flat();
       if (!!idElementType) {
         const result = initElementTypes.map((init) =>
-          this.checkProperties(init, idElementType),
+          this.checkProperties(init, idElementType, `${messagePrefix}[]`),
         );
         const returnObjectFlag = result.find((res) => typeof res === "object");
         const returnFalseFlag = result.find((res) => res === false);
@@ -209,7 +210,7 @@ export class TypeUtil {
       const initElements = this.checker.getTypeArguments(initType as any);
       if (idElements.length !== initElements.length) return "skip";
       const result = initElements.map((init, idx) =>
-        this.checkProperties(init, idElements[idx]),
+        this.checkProperties(init, idElements[idx], `${messagePrefix}[${idx}]`),
       );
       const returnObjectFlag = result.find((res) => typeof res === "object");
       const returnFalseFlag = result.find((res) => res === false);
@@ -250,7 +251,11 @@ export class TypeUtil {
         );
         if (!idIndexType) continue;
 
-        const retunObject = this.checkProperties(initPropType, idIndexType);
+        const retunObject = this.checkProperties(
+          initPropType,
+          idIndexType,
+          `${!!messagePrefix ? `${messagePrefix}.` : ""}${prop.name}`,
+        );
         if (typeof retunObject === "object") {
           return retunObject;
         }
@@ -279,7 +284,7 @@ export class TypeUtil {
       if (!idPropsNames.includes(initProp.name)) {
         return {
           objectName: "",
-          property: initProp.name,
+          property: `${!!messagePrefix ? `${messagePrefix}.` : ""}${initProp.name}`,
         };
       }
     }
@@ -298,7 +303,11 @@ export class TypeUtil {
         idProp.valueDeclaration,
       );
 
-      const retunObject = this.checkProperties(initPropType, idPropType);
+      const retunObject = this.checkProperties(
+        initPropType,
+        idPropType,
+        `${!!messagePrefix ? `${messagePrefix}.` : ""}${prop.name}`,
+      );
       if (typeof retunObject === "object") {
         return retunObject;
       }
