@@ -188,6 +188,28 @@ export class TypeUtil {
 
     // Check if idType is an array
     if (this.checker.isArrayType(idType)) {
+      const initDeclaration = initType.symbol?.valueDeclaration;
+      console.log(initDeclaration);
+
+      // if initType is tuple
+      if (
+        this.checker.isArrayType(initType) &&
+        !!initDeclaration &&
+        ts.hasOnlyExpressionInitializer(initDeclaration) &&
+        !!initDeclaration.initializer
+      ) {
+        const result: ReturnType<any>[] = [];
+        const idElementType = this.checker.getElementTypeOfArrayType(idType);
+        if (!idElementType) return "skip";
+        initDeclaration.initializer.forEachChild((child) => {
+          const type = this.checker.getTypeAtLocation(child);
+          result.push(this.checkProperties(type, idElementType));
+        });
+        const returnObjectFlag = result.find((res) => typeof res === "object");
+        const returnFalseFlag = result.find((res) => res === false);
+        return returnObjectFlag ?? returnFalseFlag ?? "skip";
+      }
+
       const idElementType = this.checker.getElementTypeOfArrayType(idType);
       const initElementTypes = [
         this.checker.getElementTypeOfArrayType(initType) ??
@@ -291,17 +313,14 @@ export class TypeUtil {
 
     for (const prop of initProps) {
       const idProp = idProps.find((idProp) => idProp.name === prop.name);
-      if (!prop.valueDeclaration || !idProp?.valueDeclaration) {
+      const initDeclaration = prop.valueDeclaration;
+      if (!initDeclaration || !idProp?.valueDeclaration) {
         return false;
       }
-      const initPropType = this.checker.getTypeOfSymbolAtLocation(
-        prop,
-        prop.valueDeclaration,
-      );
-      const idPropType = this.checker.getTypeOfSymbolAtLocation(
-        idProp,
+      const idPropType = this.checker.getTypeAtLocation(
         idProp.valueDeclaration,
       );
+      const initPropType = this.checker.getTypeAtLocation(initDeclaration);
 
       const retunObject = this.checkProperties(
         initPropType,
